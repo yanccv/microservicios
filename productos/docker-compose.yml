@@ -1,0 +1,60 @@
+#version: '3.8'
+# services:
+#   products-service:
+#     build: .
+#     container_name: products-service
+#     ports:
+#       - "8082:80" # Puerto interno para acceder al servicio
+
+services:
+  products-service:
+    image: "nginx"
+    restart: unless-stopped
+    container_name: products-service
+    ports:
+      - 8082:80
+    networks:
+      - products-network
+    volumes:
+      - "products-code:/var/www/html"
+      - "products-nginx-conf:/etc/nginx/conf.d"
+
+  products-db:
+    image: mysql:5.7.33
+    restart: unless-stopped
+    container_name: products-db
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: $DB_DATABASE
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+    networks:
+      - products-network
+    volumes:
+      - "products-db-data:/var/lib/mysql"
+
+  products-app:
+    build: ./php/
+    container_name: products-app
+    restart: unless-stopped
+    networks:
+      - products-network
+    volumes:
+      - products-code:/var/www/html
+
+networks:
+  products-network:
+    external: false
+
+volumes:
+  products-code:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/productos/php/code/"
+  products-nginx-conf:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/productos/nginx/conf.d/"
+  products-db-data:

@@ -1,0 +1,52 @@
+services:
+  users-service:
+    image: "nginx"
+    restart: unless-stopped
+    container_name: users-service
+    ports:
+      - 8081:80
+    networks:
+      - users-network
+    volumes:
+      - "users-code:/var/www/html"
+      - "users-nginx-conf:/etc/nginx/conf.d"
+
+  users-db:
+    image: mysql:5.7.33
+    restart: unless-stopped
+    container_name: users-db
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: $DB_DATABASE
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+    networks:
+      - users-network
+    volumes:
+      - "users-db-data:/var/lib/mysql"
+
+  users-app:
+    build: ./php/
+    container_name: users-app
+    restart: unless-stopped
+    networks:
+      - users-network
+    volumes:
+      - users-code:/var/www/html
+
+networks:
+  users-network:
+    external: false
+
+volumes:
+  users-code:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/usuarios/php/code/"
+  users-nginx-conf:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/usuarios/nginx/conf.d/"
+  users-db-data:

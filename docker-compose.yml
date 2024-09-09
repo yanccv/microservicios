@@ -1,0 +1,136 @@
+services:
+  products-micro:
+    image: "nginx"
+    restart: unless-stopped
+    container_name: products-micro
+    ports:
+      - 8082:80
+    networks:
+      - products-network
+      - microservices-network
+    volumes:
+      - "products-code:/var/www/html"
+      - "products-nginx-conf:/etc/nginx/conf.d"
+
+  products-db:
+    image: mysql:5.7.33
+    restart: unless-stopped
+    container_name: products-db
+    ports:
+      - 33062:3306
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_DATABASE: $DB_DATABASEPRODUCTOS
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORDPRODUCTOS
+    networks:
+      - products-network
+    volumes:
+      - "products-db-data:/var/lib/mysql"
+
+  products-app:
+    build: ./productos/php/
+    container_name: products-app
+    restart: unless-stopped
+    networks:
+      - products-network
+    volumes:
+      - products-code:/var/www/html
+
+  users-micro:
+    image: "nginx"
+    restart: unless-stopped
+    container_name: users-micro
+    ports:
+      - 8081:80
+    networks:
+      - users-network      
+      - microservices-network
+    volumes:
+      - "users-code:/var/www/html"
+      - "users-nginx-conf:/etc/nginx/conf.d"
+
+  users-db:
+    image: mysql:5.7.33
+    restart: unless-stopped
+    container_name: users-db
+    ports:
+      - 33061:3306
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: $DB_DATABASEUSUARIOS
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORDUSUARIOS
+    networks:
+      - users-network
+    volumes:
+      - "users-db-data:/var/lib/mysql"
+
+  users-app:
+    build: ./usuarios/php/
+    container_name: users-app
+    restart: unless-stopped
+    networks:
+      - users-network
+    volumes:
+      - users-code:/var/www/html
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservices-network
+
+  kong:
+    image: kong
+    container_name: kong
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/kong/kong.yml"
+      KONG_PROXY_ACCESS_LOG: "/dev/stdout"
+      KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
+      KONG_PROXY_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+    ports:
+      - "7000:8000"
+      - "7001:8001"
+    volumes:
+      - ./kong/kong.yml:/kong/kong.yml
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+  products-network:
+    external: false
+  users-network:
+    external: false    
+
+volumes:
+  products-code:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/productos/php/code/"
+  products-nginx-conf:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/productos/nginx/conf.d/"
+  products-db-data:
+  users-code:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/usuarios/php/code/"
+  users-nginx-conf:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/srv/http/tests/microservicios/usuarios/nginx/conf.d/"
+  users-db-data:

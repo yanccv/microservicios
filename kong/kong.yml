@@ -1,0 +1,15 @@
+_format_version: "2.1"
+services:
+  - name: users-micro
+    url: http://users-micro:80
+    routes:
+      - name: users-micro-route
+        paths:
+          - /usuarios
+
+  - name: products-micro
+    url: http://products-micro:80
+    routes:
+      - name: products-micro-route
+        paths:
+          - /productos

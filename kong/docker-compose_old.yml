@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  kong-db:
+    image: postgres:12
+    container_name: kong-db
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_DB: kong
+    volumes:
+      - kong-db-data:/var/lib/postgresql/data
+
+  kong:
+    image: kong:3.0
+    container_name: kong
+    depends_on:
+      - kong-db
+    ports:
+      - "7000:8000"   # Puerto para acceder a los servicios expuestos por Kong
+      - "7443:8443"   # Puerto para acceso seguro
+      - "7001:8001"   # Puerto para la interfaz administrativa de Kong
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+    volumes:
+      - kong-data:/usr/local/kong
+    command: "kong reload"
+
+volumes:
+  kong-db-data:
+  kong-data:
