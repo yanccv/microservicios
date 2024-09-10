@@ -40,7 +40,7 @@ RUN chmod +x /usr/local/bin/phpunit
 
 RUN chmod -R 775 /var/www
 RUN chown -R www-data:www-data /var/www
-RUN rm -rf html
+#RUN rm -rf html
 USER www-data
 WORKDIR /var/www/html
 #RUN composer create-project laravel/laravel html && cd html && php artisan install:api --quiet
