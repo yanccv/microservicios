@@ -116,21 +116,21 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "/srv/http/tests/microservicios/productos/php/code/"
+      device: '${PWD}/productos/php/code/'
   products-nginx-conf:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "/srv/http/tests/microservicios/productos/nginx/conf.d/"
+      device: '${PWD}/productos/nginx/conf.d/'
   products-db-data:
   users-code:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "/srv/http/tests/microservicios/usuarios/php/code/"
+      device: "./usuarios/php/code/"
   users-nginx-conf:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "/srv/http/tests/microservicios/usuarios/nginx/conf.d/"
+      device: './usuarios/nginx/conf.d/'
   users-db-data:
