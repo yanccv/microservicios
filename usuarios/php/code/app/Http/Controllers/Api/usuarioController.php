@@ -16,6 +16,7 @@ Validator::extend('unique_email', function ($attribute, $value, $parameters, $va
 
 class usuarioController extends Controller
 {
+
     public function index()
     {
         $data = Usuario::all();
@@ -36,10 +37,8 @@ class usuarioController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
-        ]);
+
+        // $this->validatorData($request, )
         $validator = Validator::make($request->all(), [
             'nombre' => 'required',
             'apellido' => 'required',
