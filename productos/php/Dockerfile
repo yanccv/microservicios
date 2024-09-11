@@ -36,8 +36,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN chmod -R 775 /var/www
 RUN chown -R www-data:www-data /var/www
 #RUN rm -rf html
-USER www-data
-WORKDIR /var/www/html
+#USER www-data
+#WORKDIR /var/www/html
 #RUN composer create-project laravel/laravel html && cd html && php artisan install:api --quiet
 # Instalamos dependendencias de composer
 #RUN composer install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts
