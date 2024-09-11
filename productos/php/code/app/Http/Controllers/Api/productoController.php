@@ -13,13 +13,19 @@ class productoController extends Controller
         'precio'        => 'nullable|numeric',
         'idcategoria'   => 'required'
     ];
-    public function index()
+
+    /**
+     * listado de productos
+     *
+     * @return Listado de Productos
+     */
+    public function list()
     {
         $data = Producto::all();
         if ($data->isEmpty()) {
-            $this->responseJson(200, 'No se encontraron Productos');
+            return $this->responseJson(200, 'No se encontraron Productos');
         } else {
-            $this->responseJson(200, '', $data);
+            return $this->responseJson(200, '', $data);
         }
     }
 
@@ -41,9 +47,9 @@ class productoController extends Controller
                 'idcategoria' => $request->idcategoria,
                 'existencia' => 0
             ]);
-            $this->responseJson(201, 'Producto Agregado', $producto);
+            return $this->responseJson(201, 'Producto Agregado', $producto);
         } catch (\Throwable $th) {
-            $this->responseJson(500, 'Error al crear el Producto', '', $th->getMessage());
+            return $this->responseJson(500, 'Error al crear el Producto', '', $th->getMessage());
         }
 
     }
@@ -54,13 +60,13 @@ class productoController extends Controller
             return $validator;
         }
         try {
-            $producto = Usuario::findOrFail($id);
+            $producto = Producto::findOrFail($id);
             $producto->update([
                 'producto' => $request->producto,
                 'precio' => $request->precio,
                 'idcategoria' => $request->idcategoria,
             ]);
-            $this->responseJson(200, 'Actualizacion Exitosa', $producto);
+            return $this->responseJson(200, 'Actualizacion Exitosa', $producto);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Producto no encontrado');
         } catch (\Throwable $th) {
@@ -72,17 +78,9 @@ class productoController extends Controller
     {
 
     }
+
     public function destroy(int $id)
     {
-        return $this->destroy('Producto', $id);
-        // try {
-        //     $user = Usuario::findOrFail($id);
-        //     $user->delete();
-        //     return response()->json(['success' => true, 'message' => 'Registro eliminado'], 200);
-        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-        //     return response()->json(['success' => false, 'message' => 'Registro No encontrado'], 404);
-        // } catch (\Exception $e) {
-        //     return response()->json(['message' => 'Error al eliminar el registro'], 500);
-        // }
+        return $this->destroy(Producto::class, $id);
     }
 }

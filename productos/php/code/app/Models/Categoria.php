@@ -12,12 +12,11 @@ class Categoria extends Model
     protected $fillable = ['categoria', 'estatus'];
 
     protected $attributes = [
-        'estatus' => 1,
+        'estatus' => 'Activo',
     ];
 
     public function productos()
     {
-        return $this->hasMany(Producto::class);  
-
+        return $this->hasMany(Producto::class); 
     }
 }

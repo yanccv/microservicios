@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 abstract class Controller
 {
-    //
     public function responseJson(int $httpCode, string $message, $data = null, string $error = null)
     {
         $response = array_filter([
@@ -17,7 +17,7 @@ abstract class Controller
             'status' => $httpCode
         ]);
 
-        response()->json($response, $httpCode);
+        return response()->json($response, $httpCode);
     }
 
     public function validatorData(Request $request, array $conditions)
@@ -42,7 +42,7 @@ abstract class Controller
             return $this->responseJson(200, 'Registro eliminado');
             // return response()->json(['success' => true, 'message' => 'Registro eliminado'], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Id No encontrado');
+            return $this->responseJson(404, 'Registro No encontrado');
         } catch (\Throwable $th) {
             return $this->responseJson(500, 'Error al eliminar el registro', '', $th->getMessage());
         }

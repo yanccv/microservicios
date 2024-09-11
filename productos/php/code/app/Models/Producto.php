@@ -16,7 +16,8 @@ class Producto extends Model
     ];
 
     protected $attributes = [
-        'estatus' => 1,
+        'estatus'       => 'Activo',
+        'existencia'    => 0
     ];
 
     public function categoria()
