@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use \Illuminate\Database\Eloquent\Collection;
 
 abstract class Controller
 {
@@ -17,7 +16,7 @@ abstract class Controller
      * @param string|null $error si ocurre se entregara
      * @return \Illuminate\Http\JsonResponse
      */
-    public function responseJson(int $httpCode, string $message, Collection $data = null, string $error = null) : \Illuminate\Http\JsonResponse
+    public function responseJson(int $httpCode, string $message, $data = null, string $error = null) : \Illuminate\Http\JsonResponse
     {
         $response = array_filter([
             'message' => $message,
