@@ -12,7 +12,8 @@ class Producto extends Model
         'producto',
         'precio',
         'estatus',
-        'idcategoria'
+        'idcategoria',
+        'idunidad'
     ];
 
     protected $attributes = [
