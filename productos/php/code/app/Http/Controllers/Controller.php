@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use \Illuminate\Database\Eloquent\Collection;
 
 abstract class Controller
 {
@@ -16,7 +17,7 @@ abstract class Controller
      * @param string|null $error si ocurre se entregara
      * @return \Illuminate\Http\JsonResponse
      */
-    public function responseJson(int $httpCode, string $message, array $data = null, string $error = null) : \Illuminate\Http\JsonResponse
+    public function responseJson(int $httpCode, string $message, Collection $data = null, string $error = null) : \Illuminate\Http\JsonResponse
     {
         $response = array_filter([
             'message' => $message,
@@ -67,4 +68,44 @@ abstract class Controller
         }
     }
 
+    /**
+     * Actualizacion Simple Macro
+     *
+     * @param [type] $model Donde se realizaran las operaciones
+     * @param [type] $id
+     * @param [type] $request Valores actualizables
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateSingle($model, $id, $request) : \Illuminate\Http\JsonResponse
+    {
+        try {
+            $unidad = $model::findOrFail($id);
+            $unidad->fill($request->all());
+            if (!$unidad->isDirty()) {
+                return $this->responseJson(200, 'Sin Cambios a Actualizar', $unidad);
+            }
+            $unidad->save();
+            return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+            return $this->responseJson(404, 'Registro no encontrado');
+        } catch (\Throwable $th) {
+            return $this->responseJson(500, 'Error al actualizar la Unidad', null, $th->getMessage());
+        }
+    }
+
+    /**
+     * Listado Completo de Data
+     *
+     * @param [type] $model Modelo del que se van a retornar los datos
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function allData($model) : \Illuminate\Http\JsonResponse
+    {
+        $data = $model::all();
+        if ($data->isEmpty()) {
+            return $this->responseJson(200, 'No se encontraron Productos');
+        } else {
+            return $this->responseJson(200, '', $data);
+        }
+    }
 }
