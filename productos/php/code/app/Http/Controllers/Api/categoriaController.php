@@ -8,33 +8,31 @@ use Illuminate\Http\Request;
 
 class categoriaController extends Controller
 {
+    /**
+     * Validacion de los campos del modelo Categoria
+     */
     var $conditional = [
         'categoria'      => 'required'
     ];
 
     /**
-     * listado de productos
+     * listado de categorias - GET
      *
-     * @return Listado de Categorias
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function list()
+    public function list() : \Illuminate\Http\JsonResponse
     {
-        $data = Categoria::all();
-        if ($data->isEmpty()) {
-            return $this->responseJson(200, 'No se encontraron Categorias');
-        } else {
-            return $this->responseJson(200, '', $data);
-        }
+        return $this->allData(Categoria::class);
     }
 
 
     /**
-     * Agrega categoria a la bd
+     * Agregar Registro de Categorias - POST
      *
-     * @param Request formulario con los datos
-     * @return responseJson
+     * @param Request $request Valores a insertar
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function add(Request $request)
+    public function add(Request $request) : \Illuminate\Http\JsonResponse
     {
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
@@ -50,7 +48,14 @@ class categoriaController extends Controller
 
     }
 
-    public function edit(Request $request, int $id)
+    /**
+     * Modificacion Completa - PUT
+     *
+     * @param Request $request Todos los valores actualizables
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit(Request $request, int $id) : \Illuminate\Http\JsonResponse
     {
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
@@ -68,8 +73,30 @@ class categoriaController extends Controller
         }
     }
 
-    public function destroy(int $id)
+    /**
+     * Modificacion Simple - PATCH
+     *
+     * @param Request $request Valores a actualizar
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse responseJson()
+     */
+    public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
     {
-        return $this->destroy(Categoria::class, $id);
+        $conditional = array_intersect_key($this->conditional, $request->all());
+        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+            return $validator;
+        }
+        return $this->updateSingle(Categoria::class, $id, $request);
+    }
+
+    /**
+     * Borrado de Registros - DELETE
+     *
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(int $id) : \Illuminate\Http\JsonResponse
+    {
+        return $this->destroyGeneral(Categoria::class, $id);
     }
 }
