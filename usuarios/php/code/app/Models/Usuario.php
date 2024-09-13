@@ -24,9 +24,10 @@ class Usuario extends Model
         'type',
         'estatus'
     ];
-    protected $casts = [
-        'lastsignin' => 'datetime',
-    ];
+    // protected $casts = [
+    //     'lastsignin' => 'datetime',
+    // ];
+
     protected $attributes = [
         'estatus' => 1,
     ];
