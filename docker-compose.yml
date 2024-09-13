@@ -1,4 +1,5 @@
 services:
+  # Productos
   products-micro:
     image: "nginx"
     restart: unless-stopped
@@ -37,6 +38,8 @@ services:
     volumes:
       - products-code:/var/www/html
 
+
+  # Usuarios
   users-micro:
     image: "nginx"
     restart: unless-stopped
@@ -75,6 +78,47 @@ services:
     volumes:
       - users-code:/var/www/html
 
+
+  # Ventas
+  sales-micro:
+    image: "nginx"
+    restart: unless-stopped
+    container_name: sales-micro
+    ports:
+      - 8083:80
+    networks:
+      - sales-network      
+      - microservices-network
+    volumes:
+      - "sales-code:/var/www/html"
+      - "sales-nginx-conf:/etc/nginx/conf.d"
+
+  sales-db:
+    image: mysql:5.7.33
+    restart: unless-stopped
+    container_name: sales-db
+    ports:
+      - 33063:3306
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: $DB_DATABASESALES
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORDSALES
+    networks:
+      - sales-network
+    volumes:
+      - "sales-db-data:/var/lib/mysql"
+
+  sales-app:
+    build: ./usuarios/php/
+    container_name: sales-app
+    restart: unless-stopped
+    networks:
+      - sales-network
+    volumes:
+      - sales-code:/var/www/html
+
+
   rabbitmq:
     image: "rabbitmq:3-management"
     container_name: rabbitmq
@@ -110,8 +154,11 @@ networks:
     external: false
   users-network:
     external: false    
+  sales-network:
+    external: false
 
 volumes:
+  # Volumenes del micro de productos
   products-code:
     driver_opts:
       type: "none"
@@ -123,6 +170,8 @@ volumes:
       o: "bind"
       device: '${PWD}/productos/nginx/conf.d/'
   products-db-data:
+  
+  # Volumenes del micro de usuarios
   users-code:
     driver_opts:
       type: "none"
@@ -134,3 +183,16 @@ volumes:
       o: "bind"
       device: './usuarios/nginx/conf.d/'
   users-db-data:
+
+  # Volumenes del micro de ventas
+  sales-code:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/ventas/php/code/"
+  sales-nginx-conf:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: '${PWD}/ventas/nginx/conf.d/'
+  sales-db-data:
