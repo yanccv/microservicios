@@ -47,25 +47,41 @@ abstract class Controller
         return true;
     }
 
+
     /**
-     * Undocumented function
+     * Listado Completo de Data
      *
-     * @param $model Modelo del que se va a eliminar el registro
-     * @param integer $id identificador del registro a eliminar
+     * @param [type] $model Modelo del que se van a retornar los datos
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroyGeneral($model, int $id) : \Illuminate\Http\JsonResponse
+    public function allData($model) : \Illuminate\Http\JsonResponse
     {
-        try {
-            $registerToRemove = $model::findOrFail($id);
-            $registerToRemove->delete();
-            return $this->responseJson(200, 'Registro eliminado');
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Registro No encontrado');
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al eliminar el registro', '', $th->getMessage());
+        $data = $model::all();
+        if ($data->isEmpty()) {
+            return $this->responseJson(200, 'No se encontraron Productos');
+        } else {
+            return $this->responseJson(200, '', $data);
         }
     }
+
+
+    /**
+     * Insertar Nuevo Registro
+     *
+     * @param [type] $model Modelo donde se va a insertar el registro
+     * @param [type] $request Valores a insertar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addData($model, $request) : \Illuminate\Http\JsonResponse
+    {
+        try {
+            $categoria = $model::create($request->all());
+            return $this->responseJson(201, 'Registro Agregado', $categoria);
+        } catch (\Throwable $th) {
+            return $this->responseJson(500, 'Error al Crear ', '', $th->getMessage());
+        }
+    }
+
 
     /**
      * Actualizacion Simple Macro
@@ -93,18 +109,24 @@ abstract class Controller
     }
 
     /**
-     * Listado Completo de Data
+     * Undocumented function
      *
-     * @param [type] $model Modelo del que se van a retornar los datos
+     * @param $model Modelo del que se va a eliminar el registro
+     * @param integer $id identificador del registro a eliminar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function allData($model) : \Illuminate\Http\JsonResponse
+    public function destroyGeneral($model, int $id) : \Illuminate\Http\JsonResponse
     {
-        $data = $model::all();
-        if ($data->isEmpty()) {
-            return $this->responseJson(200, 'No se encontraron Productos');
-        } else {
-            return $this->responseJson(200, '', $data);
+        try {
+            $registerToRemove = $model::findOrFail($id);
+            $registerToRemove->delete();
+            return $this->responseJson(200, 'Registro eliminado');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+            return $this->responseJson(404, 'Registro No encontrado');
+        } catch (\Throwable $th) {
+            return $this->responseJson(500, 'Error al eliminar el registro', '', $th->getMessage());
         }
     }
+
+
 }

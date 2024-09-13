@@ -39,17 +39,18 @@ class productoController extends Controller
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
         }
-        try {
-            $producto = Producto::create([
-                'producto' => $request->producto,
-                'precio' => $request->precio,
-                'idcategoria' => $request->idcategoria,
-                'existencia' => 0
-            ]);
-            return $this->responseJson(201, 'Producto Agregado', $producto);
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al crear el Producto', null, $th->getMessage());
-        }
+        return $this->addData(Producto::class, $request);
+        // try {
+        //     $producto = Producto::create([
+        //         'producto' => $request->producto,
+        //         'precio' => $request->precio,
+        //         'idcategoria' => $request->idcategoria,
+        //         'existencia' => 0
+        //     ]);
+        //     return $this->responseJson(201, 'Producto Agregado', $producto);
+        // } catch (\Throwable $th) {
+        //     return $this->responseJson(500, 'Error al crear el Producto', null, $th->getMessage());
+        // }
 
     }
 

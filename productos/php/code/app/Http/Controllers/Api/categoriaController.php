@@ -37,15 +37,7 @@ class categoriaController extends Controller
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
         }
-        try {
-            $categoria = Categoria::create([
-                'categoria' => $request->categoria
-            ]);
-            return $this->responseJson(201, 'Categoria Agregada', $categoria);
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al crear la Categoria', '', $th->getMessage());
-        }
-
+        return $this->addData(Categoria::class, $request);
     }
 
     /**

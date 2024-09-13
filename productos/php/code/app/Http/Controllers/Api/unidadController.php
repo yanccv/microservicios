@@ -36,16 +36,7 @@ class unidadController extends Controller
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
         }
-        try {
-            $unidad = Unidades::create([
-                'unidad' => $request->unidad,
-                'siglas' => $request->siglas,
-            ]);
-            return $this->responseJson(201, 'Unidad Agregada', $unidad);
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al crear la unidad', null, $th->getMessage());
-        }
-
+        return $this->addData(Unidades::class, $request);
     }
 
     /**
