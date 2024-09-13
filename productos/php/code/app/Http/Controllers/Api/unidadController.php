@@ -16,26 +16,21 @@ class unidadController extends Controller
     /**
      * listado de productos
      *
-     * @return Listado de Categorias
+     * @return Listado Completo de Unidades
      */
     public function list()
     {
-        $data = Unidades::all();
-        if ($data->isEmpty()) {
-            return $this->responseJson(200, 'No se encontraron Unidades');
-        } else {
-            return $this->responseJson(200, '', $data);
-        }
+        return $this->allData(Unidades::class);
     }
 
 
 
-     /**
-      * Agregar Registro de Unidades
-      *
-      * @param Request $request Valores a insertar
-      * @return \Illuminate\Http\JsonResponse
-      */
+    /**
+     * Agregar Registro de Unidades
+     *
+     * @param Request $request Valores a insertar
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function add(Request $request) : \Illuminate\Http\JsonResponse
     {
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
@@ -91,22 +86,15 @@ class unidadController extends Controller
         if (($validator = $this->validatorData($request, $conditional)) !== true) {
             return $validator;
         }
-        try {
-            $unidad = Unidades::findOrFail($id);
-            print_r($request->only(array_keys($conditional)));
-            $unidad->fill($request->all());
-            if (!$unidad->isDirty()) {
-                return $this->responseJson(200, 'Sin Cambios a Actualizar', $unidad);
-            }
-            $unidad->save();
-            return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Unidad no encontrada');
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al actualizar la Unidad', '', $th->getMessage());
-        }
+        return $this->updateSingle(Unidades::class, $id, $request);
     }
 
+    /**
+     * Borrado de Registros - DELETE
+     *
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
         return $this->destroyGeneral(Unidades::class, $id);

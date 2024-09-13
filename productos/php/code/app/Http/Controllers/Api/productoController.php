@@ -8,34 +8,33 @@ use Illuminate\Http\Request;
 
 class productoController extends Controller
 {
+    /**
+     * Validacion de los campos del modelo Producto
+     */
     var $conditional = [
         'producto'      => 'required',
         'precio'        => 'nullable|numeric',
         'idcategoria'   => 'required'
     ];
 
+
     /**
-     * listado de productos
+     * Retorna Todos los Registros - GET
      *
-     * @return Listado de Productos
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function list()
+    public function list() : \Illuminate\Http\JsonResponse
     {
-        $data = Producto::all();
-        if ($data->isEmpty()) {
-            return $this->responseJson(200, 'No se encontraron Productos');
-        } else {
-            return $this->responseJson(200, '', $data);
-        }
+        return $this->allData(Producto::class);
     }
 
     /**
-     * Agrega a la bD
+     * Agregar Registro de Productos - POST
      *
-     * @param Request formulario con los datos
-     * @return responseJson
+     * @param Request $request Valores a insertar
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function add(Request $request)
+    public function add(Request $request) : \Illuminate\Http\JsonResponse
     {
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
@@ -49,12 +48,19 @@ class productoController extends Controller
             ]);
             return $this->responseJson(201, 'Producto Agregado', $producto);
         } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al crear el Producto', '', $th->getMessage());
+            return $this->responseJson(500, 'Error al crear el Producto', null, $th->getMessage());
         }
 
     }
 
-    public function edit(Request $request, int $id)
+    /**
+     * Modificacion Completa - PUT
+     *
+     * @param Request $request Valores actualizables
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit(Request $request, int $id) : \Illuminate\Http\JsonResponse
     {
         if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
             return $validator;
@@ -74,13 +80,32 @@ class productoController extends Controller
         }
     }
 
-    public function set()
-    {
 
+    /**
+     * Modificacion Simple - PATCH
+     *
+     * @param Request $request Valores a actualizar
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse responseJson()
+     */
+    public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    {
+        $conditional = array_intersect_key($this->conditional, $request->all());
+        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+            return $validator;
+        }
+        return $this->updateSingle(Producto::class, $id, $request);
     }
 
-    public function destroy(int $id)
+
+    /**
+     * Borrado de Registros - DELETE
+     *
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
-        return $this->destroy(Producto::class, $id);
+        return $this->destroyGeneral(Producto::class, $id);
     }
 }
