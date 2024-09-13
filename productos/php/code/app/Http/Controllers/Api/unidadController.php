@@ -38,11 +38,12 @@ class unidadController extends Controller
         }
         try {
             $unidad = Unidades::create([
-                'unidad' => $request->unidad
+                'unidad' => $request->unidad,
+                'siglas' => $request->siglas,
             ]);
             return $this->responseJson(201, 'Unidad Agregada', $unidad);
         } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al crear la unidad', '', $th->getMessage());
+            return $this->responseJson(500, 'Error al crear la unidad', null, $th->getMessage());
         }
 
     }
