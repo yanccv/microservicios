@@ -29,6 +29,24 @@ class productoController extends Controller
     }
 
     /**
+     * Obtener informacion de producto
+     *
+     * @param integer $id identificador del registro
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get(int $id) : \Illuminate\Http\JsonResponse
+    {
+        try {
+            $producto = Producto::findOrFail($id);
+            return $this->responseJson(200, '', $producto);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+            return $this->responseJson(404, 'Producto no encontrado');
+        } catch (\Throwable $th) {
+            return $this->responseJson(500, 'Error al actualizar el Producto', '', $th->getMessage());
+        }
+    }
+
+    /**
      * Agregar Registro de Productos - POST
      *
      * @param Request $request Valores a insertar
@@ -40,18 +58,6 @@ class productoController extends Controller
             return $validator;
         }
         return $this->addData(Producto::class, $request);
-        // try {
-        //     $producto = Producto::create([
-        //         'producto' => $request->producto,
-        //         'precio' => $request->precio,
-        //         'idcategoria' => $request->idcategoria,
-        //         'existencia' => 0
-        //     ]);
-        //     return $this->responseJson(201, 'Producto Agregado', $producto);
-        // } catch (\Throwable $th) {
-        //     return $this->responseJson(500, 'Error al crear el Producto', null, $th->getMessage());
-        // }
-
     }
 
     /**
