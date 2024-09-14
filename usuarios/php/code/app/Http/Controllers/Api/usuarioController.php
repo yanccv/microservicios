@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
-#use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Validator;
+
+    // TODO
+    // Rectorizar Code a como esta el midro de productos
 
 Validator::extend('unique_email', function ($attribute, $value, $parameters, $validator) {
     return Usuario::where('email', $value)

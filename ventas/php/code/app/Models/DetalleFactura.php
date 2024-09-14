@@ -22,4 +22,9 @@ class DetalleFactura extends Model
         'cantidad',
         'impuesto',
     ];
+
+    public function factura()
+    {
+        return $this->belongsTo(Factura::class);
+    }
 }

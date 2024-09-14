@@ -28,4 +28,9 @@ class Factura extends Model
     protected $attributes = [
         'estatus'       => 'Activo',
     ];
+
+    public function detalleFactura()
+    {
+        return $this->hasMany(DetalleFactura::class);
+    }
 }
