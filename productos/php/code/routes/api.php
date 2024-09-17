@@ -1,9 +1,21 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\categoriaController;
 use App\Http\Controllers\Api\productoController;
 use App\Http\Controllers\Api\unidadController;
-use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
 
 /**
  * Rutas de los productos
@@ -31,3 +43,6 @@ Route::put('/unidades/{id}', [unidadController::class, 'edit']);
 Route::patch('/unidades/{id}', [unidadController::class, 'set']);
 Route::delete('/unidades/{id}', [unidadController::class, 'destroy']);
 
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

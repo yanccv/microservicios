@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
-abstract class Controller
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
+
+class Controller extends BaseController
 {
-        /**
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    /**
      * respuesta generalizada de la Api solo en formato Json
      *
      * @param integer $httpCode
@@ -32,12 +38,12 @@ abstract class Controller
      * @param array $conditions validaciones a realizar campo a campo
      * @return \Illuminate\Http\JsonResponse | true
      */
-    public function validatorData(Request $request, array $conditions) : \Illuminate\Http\JsonResponse | true
+    public function validatorData(array $request, array $conditions) : \Illuminate\Http\JsonResponse | bool
     {
-        if (empty($request->all())) {
+        if (empty($request)) {
             return $this->responseJson(400, 'Formulario Vacio');
         }
-        $validator = Validator::make($request->all(), $conditions);
+        $validator = Validator::make($request, $conditions);
         if ($validator->fails()) {
             return $this->responseJson(400, 'Error en la validación de los datos',null, $validator->errors());
         }

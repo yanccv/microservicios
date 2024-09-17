@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('apellido');
             $table->string('email');
             $table->string('clave');
-            $table->string('lastsignin');
+            $table->string('lastsignin')->nullable()->change();
             $table->integer('type');
             $table->boolean('estatus');
             $table->timestamps();

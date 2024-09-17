@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Client\Request as ClientRequest;
+use Illuminate\Routing\Controller as BaseController;
+
 use Illuminate\Support\Facades\Validator;
 
-abstract class Controller
+class Controller extends BaseController
 {
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
     /**
      * respuesta generalizada de la Api solo en formato Json
      *
@@ -35,7 +42,7 @@ abstract class Controller
      * @param array $conditions validaciones a realizar campo a campo
      * @return \Illuminate\Http\JsonResponse | true
      */
-    public function validatorData(Request $request, array $conditions) : \Illuminate\Http\JsonResponse | true
+    public function validatorData(ClientRequest $request, array $conditions)
     {
         if (empty($request->all())) {
             return $this->responseJson(400, 'Formulario Vacio');
@@ -127,6 +134,5 @@ abstract class Controller
             return $this->responseJson(500, 'Error al eliminar el registro', '', $th->getMessage());
         }
     }
-
 
 }

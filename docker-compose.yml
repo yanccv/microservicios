@@ -176,12 +176,12 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "./usuarios/php/code/"
+      device: '${PWD}/usuarios/php/code/'
   users-nginx-conf:
     driver_opts:
       type: "none"
       o: "bind"
-      device: './usuarios/nginx/conf.d/'
+      device: '${PWD}/usuarios/nginx/conf.d/'
   users-db-data:
 
   # Volumenes del micro de ventas
