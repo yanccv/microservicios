@@ -15,23 +15,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/users', [usuarioController::class, 'index']);
+Route::get('/usuarios', [usuarioController::class, 'index']);
 
-Route::get('/users/{id}', function () {
-    return ['Retorna un Usuario'];
-});
+Route::get('/usuarios/{id}', [usuarioController::class, 'get'])->where('id', '[0-9]+');
 
-Route::post('/users', [usuarioController::class, 'store']);
+Route::post('/usuarios', [usuarioController::class, 'add']);
 
-
-Route::put('/users/{id}', [usuarioController::class, 'updatefull'])->where('id', '[0-9]+');
+Route::put('/usuarios/{id}', [usuarioController::class, 'edit'])->where('id', '[0-9]+');
 
 
-Route::patch('/users/{$id}', function () {
+Route::patch('/usuarios/{$id}', function () {
     return ['Edicion Parcial de  User'];
 });
 
-Route::delete('/users/{id}', [usuarioController::class, 'destroy'])->where('id', '[0-9]+');
+Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy'])->where('id', '[0-9]+');
 
 
 // s

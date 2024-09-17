@@ -18,92 +18,86 @@ Validator::extend('unique_email', function ($attribute, $value, $parameters, $va
 
 class usuarioController extends Controller
 {
+    /**
+     * Validacion de los campos del modelo Usuario
+     */
+    var $conditional = [
+        'nombre' => 'required',
+        'apellido' => 'required',
+        'email' => 'required|email|unique_email:',
+        'clave' => 'required',
+        'type' => 'required'
+    ];
 
+
+    /**
+     * Retorna Todos los Registros - GET
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $data = Usuario::all();
         if ($data->isEmpty()) {
-            unset($data);
-            $data = [
-                'message' => 'No se encontraron usuarios',
-                'status' => 404
-            ];
-        } else {
-            $data = [
-                'usuarios' => $data,
-                'status' => 200
-            ];
+            return $this->responseJson(40, 'No se encontraron usuarios');
         }
-        return response()->json($data, 200);
+        return $this->responseJson(200, '', $data);
     }
 
-    public function store(Request $request)
+    /**
+     * Obtener informacion de usuario
+     *
+     * @param integer $id identificador del registro
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get(int $id)
     {
-
-        // $this->validatorData($request, )
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required|unique:usuarios|email',
-            'clave' => 'required',
-            'type' => 'required'
-        ]);
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-        $usuario = Usuario::create([
-            'nombre' => $request->nombre,
-            'apellido' => $request->apellido,
-            'email' => $request->email,
-            'clave' => $request->clave,
-            'type' => $request->type,
-            'lastsignin' => null
-        ]);
-
-        if (!$usuario) {
-            $data = [
-                'message' => 'Error al crear el Usuario',
-                'status' => 500
-            ];
-            return response()->json($data, 500);
-        }
-
-        $data = [
-            'message' => 'Usuario Creado',
-            'usuario' => $usuario,
-            'status' => 201
-        ];
-        return response()->json($data, 201);
-    }
-
-    public function updatefull(Request $request, int $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required|email|unique_email:' . $id,
-            'clave' => 'required',
-            'type' => 'required'
-        ]);
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
         try {
             $user = Usuario::findOrFail($id);
-            $user->update($request->all());
-            return response()->json(['success' => true, 'message' => 'Actualización Exitosa'], 200);
+            return $this->responseJson(200, '', $user);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $mnfe) {
+            return $this->responseJson(200, 'Registro no encontrado');
+        } catch (\Throwable $th) {
+            return $this->responseJson(200, 'Registro no encontrado', '', $th->getMessage());
+        }
+    }
+
+    /**
+     * Agregar Usuario - POST
+     *
+     * @param Request $request Valores a insertar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function add(Request $request)
+    {
+        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
+            return $validator;
+        }
+        return $this->addData(Usuario::class, $request);
+    }
+
+    /**
+     * Modificacion Completa - PUT
+     *
+     * @param Request $request Valores actualizables
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit(Request $request, int $id)
+    {
+        $condition = $this->conditional;
+        $condition['email'] = 'required|email|unique_email:' . $id;
+        if (($validator = $this->validatorData($request->all(), $condition)) !== true) {
+            return $validator;
+        }
+        try {
+            $usuario = Usuario::findOrFail($id);
+            $usuario->update($request->all());
+            return $this->responseJson(200, 'Actualizacion Exitosa', $usuario);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return response()->json(['success' => false, 'message' => 'Id No encontrado'], 404);
+            return $this->responseJson(404, 'Registro no encontrado');
+        } catch (\Throwable $th) {
+            return $this->responseJson(500, 'Error al actualizar', '', $th->getMessage());
         }
     }
 
@@ -112,16 +106,26 @@ class usuarioController extends Controller
 
     }
 
+        /**
+     * Modificacion Simple - PATCH
+     *
+     * @param Request $request Valores a actualizar
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse responseJson()
+     */
+    public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    {
+        $conditional = $this->conditional;
+        $conditional['email'] = 'required|email|unique_email:' . $id;
+        $conditional = array_intersect_key($conditional, $request->all());
+        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+            return $validator;
+        }
+        return $this->updateSingle(Usuario::class, $id, $request);
+    }
+
     public function destroy(int $id)
     {
-        try {
-            $user = Usuario::findOrFail($id);
-            $user->delete();
-            return response()->json(['success' => true, 'message' => 'Registro eliminado'], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return response()->json(['success' => false, 'message' => 'Id No encontrado'], 404);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar el registro'], 500);
-        }
+        return $this->destroyGeneral(Usuario::class, $id);
     }
 }
