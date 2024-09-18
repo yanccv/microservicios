@@ -16,9 +16,6 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('apellido');
             $table->string('email');
-            $table->string('clave');
-            $table->string('lastsignin');
-            $table->integer('type');
             $table->boolean('estatus');
             $table->timestamps();
         });

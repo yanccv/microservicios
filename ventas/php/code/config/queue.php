@@ -72,6 +72,7 @@ return [
         ],
         'rabbitmq' => [
             'driver' => 'rabbitmq',
+            'queue'  => 'usuarios',
             'hosts' => [
                 [
                     'host' => 'rabbitmq',
