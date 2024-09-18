@@ -127,6 +127,9 @@ services:
       - "15672:15672"
     networks:
       - microservices-network
+      - products-network
+      - sales-network
+      - users-network
 
   kong:
     image: kong
