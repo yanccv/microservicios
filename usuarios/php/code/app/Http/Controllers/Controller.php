@@ -60,11 +60,11 @@ class Controller extends BaseController
      * @param [type] $request Valores a insertar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function addData($model, $request) : \Illuminate\Http\JsonResponse
+    public function addData($model, $request) : \Illuminate\Http\JsonResponse | array
     {
         try {
-            $categoria = $model::create($request->all());
-            return $this->responseJson(201, 'Registro Agregado', $categoria);
+            $record = $model::create($request->all());
+            return ['created' => true, 'record' => $record->toArray()];
         } catch (\Throwable $th) {
             return $this->responseJson(500, 'Error al Crear ', '', $th->getMessage());
         }
@@ -79,20 +79,23 @@ class Controller extends BaseController
      * @param [type] $request Valores actualizables
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateSingle($model, $id, $request) : \Illuminate\Http\JsonResponse
+    public function updateSingle($model, $id, $request) : \Illuminate\Http\JsonResponse | array
     {
         try {
-            $unidad = $model::findOrFail($id);
-            $unidad->fill($request->all());
-            if (!$unidad->isDirty()) {
-                return $this->responseJson(200, 'Sin Cambios a Actualizar', $unidad);
+            $record = $model::findOrFail($id);
+            $record->fill($request->all());
+            if (!$record->isDirty()) {
+                return $this->responseJson(200, 'Sin Cambios a Actualizar', $record);
             }
-            $unidad->save();
-            return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
+            $fieldsUpdated = $record->getDirty();
+            $record->save();
+            $fieldsUpdated['id'] = $id;
+            return ['updated' => true, 'record' => $fieldsUpdated];
+            // return $this->responseJson(200, 'Actualizacion Exitosa', $record);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro no encontrado');
         } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al actualizar la Unidad', null, $th->getMessage());
+            return $this->responseJson(500, 'Error al actualizar', null, $th->getMessage());
         }
     }
 
@@ -103,12 +106,13 @@ class Controller extends BaseController
      * @param integer $id identificador del registro a eliminar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroyGeneral($model, int $id) : \Illuminate\Http\JsonResponse
+    public function destroyGeneral($model, int $id) : \Illuminate\Http\JsonResponse | array
     {
         try {
             $registerToRemove = $model::findOrFail($id);
             $registerToRemove->delete();
-            return $this->responseJson(200, 'Registro eliminado');
+            return ['deleted' => true];
+            // return $this->responseJson(200, 'Registro eliminado');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro No encontrado');
         } catch (\Throwable $th) {

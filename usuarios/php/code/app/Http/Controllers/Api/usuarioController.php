@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\addProduct;
+use App\Jobs\userAdded;
+use App\Jobs\userDeleted;
+use App\Jobs\userUpdated;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -73,7 +77,15 @@ class usuarioController extends Controller
         if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
             return $validator;
         }
-        return $this->addData(Usuario::class, $request);
+        $addRecord = (object) $this->addData(Usuario::class, $request);
+        if (!isset($addRecord->created)) {
+            return $addRecord;
+        } elseif ($addRecord->created) {
+            userAdded::dispatch($addRecord->record);
+            return $this->responseJson(201, 'Registro Agregado', $addRecord->record);
+        }
+
+
     }
 
     /**
@@ -93,6 +105,7 @@ class usuarioController extends Controller
         try {
             $usuario = Usuario::findOrFail($id);
             $usuario->update($request->all());
+            userUpdated::dispatch($usuario->toArray());
             return $this->responseJson(200, 'Actualizacion Exitosa', $usuario);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro no encontrado');
@@ -101,31 +114,39 @@ class usuarioController extends Controller
         }
     }
 
-    public function updatePartial(Request $request, int $id)
-    {
-
-    }
-
-        /**
+    /**
      * Modificacion Simple - PATCH
      *
      * @param Request $request Valores a actualizar
      * @param integer $id identificador del registro a editar
      * @return \Illuminate\Http\JsonResponse responseJson()
      */
-    public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    public function set(Request $request, int $id) //: \Illuminate\Http\JsonResponse
     {
         $conditional = $this->conditional;
         $conditional['email'] = 'required|email|unique_email:' . $id;
         $conditional = array_intersect_key($conditional, $request->all());
-        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
             return $validator;
         }
-        return $this->updateSingle(Usuario::class, $id, $request);
+        $updatedRecord =  (object) $this->updateSingle(Usuario::class, $id, $request);
+        if (!isset($updatedRecord->updated)) {
+            return $updatedRecord;
+        } elseif ($updatedRecord->updated) {
+            userUpdated::dispatch($updatedRecord->record);
+            return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
+        }
     }
 
     public function destroy(int $id)
     {
-        return $this->destroyGeneral(Usuario::class, $id);
+
+        $deletedRecord = (Object) $this->destroyGeneral(Usuario::class, $id);
+        if (!isset($deletedRecord->deleted)) {
+            return $deletedRecord;
+        } elseif ($deletedRecord->deleted) {
+            userDeleted::dispatch($id);
+            return $this->responseJson(200, 'Registro eliminado');
+        }
     }
 }

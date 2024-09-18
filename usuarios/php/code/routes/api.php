@@ -24,9 +24,7 @@ Route::post('/usuarios', [usuarioController::class, 'add']);
 Route::put('/usuarios/{id}', [usuarioController::class, 'edit'])->where('id', '[0-9]+');
 
 
-Route::patch('/usuarios/{$id}', function () {
-    return ['Edicion Parcial de  User'];
-});
+Route::patch('/usuarios/{id}', [usuarioController::class, 'set'])->where('id', '[0-9]+');
 
 Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy'])->where('id', '[0-9]+');
 
