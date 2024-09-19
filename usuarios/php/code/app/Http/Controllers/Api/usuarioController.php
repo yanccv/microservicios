@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\addProduct;
 use App\Jobs\userAdded;
 use App\Jobs\userDeleted;
 use App\Jobs\userUpdated;
@@ -33,6 +32,7 @@ class usuarioController extends Controller
         'type' => 'required'
     ];
 
+    var $queue = 'usuarios';
 
     /**
      * Retorna Todos los Registros - GET
@@ -105,6 +105,7 @@ class usuarioController extends Controller
         try {
             $usuario = Usuario::findOrFail($id);
             $usuario->update($request->all());
+
             userUpdated::dispatch($usuario->toArray());
             return $this->responseJson(200, 'Actualizacion Exitosa', $usuario);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {

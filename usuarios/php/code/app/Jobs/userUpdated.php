@@ -30,6 +30,10 @@ class userUpdated implements ShouldQueue
      */
     public function handle()
     {
-
+        echo 'send evento edit from Usuarios Micro';
+        Queue::connection('rabbitmq')->pushRaw(json_encode($this->user), '', [
+            'exchange' => 'usuariosExchange',
+            'routing_key' => 'user.updated'
+        ]);
     }
 }

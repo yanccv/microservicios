@@ -31,5 +31,9 @@ class userDeleted implements ShouldQueue
     public function handle()
     {
         echo 'send evento deleted from Usuarios Micro';
+        Queue::connection('rabbitmq')->pushRaw($this->id, '', [
+            'exchange' => 'usuariosExchange',
+            'routing_key' => 'user.deleted'
+        ]);
     }
 }

@@ -31,7 +31,7 @@ return [
     'connections' => [
 
         'sync' => [
-            'driver' => 'sync',
+            'driver' => 'rabbitmq',
         ],
 
         'database' => [
@@ -71,21 +71,61 @@ return [
             'after_commit' => false,
         ],
 
+
         'rabbitmq' => [
             'driver' => 'rabbitmq',
-            'queue'  => 'usuarios',
-            'hosts' => [
-                [
-                    'host' => 'rabbitmq',
-                    'port' => 5672,
-                    'user' =>  'guest',
-                    'password' => 'guest',
-                    'vhost' => '/',
-                ],
-                // ...
+            'host' => env('RABBITMQ_HOST', 'rabbitmq'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'username' => env('RABBITMQ_USERNAME', 'guest'),
+            'password' => env('RABBITMQ_PASSWORD', 'guest'),
+            'vhost' => env('RABBITMQ_VHOST', '/'),
+            'queue' => 'usuariosQueue',
+            'exchange' => [
+                'name' => env('RABBITMQ_EXCHANGE_NAME', 'usuariosExchange'),
+                'type' => 'direct', // O 'topic', según el tipo de enrutamiento
+                'durable' => true, // Mantiene los mensajes incluso si RabbitMQ reinicia
             ],
-       // ...
+            // 'queues' => [
+            //     'ventas' => 'ventas',
+            //     'delay' => 'delay',
+            // ],
+            // 'exchanges' => [
+            //     'usuariosExchange' => [
+            //         'name' => 'usuariosExchange',
+            //         'type' => 'topic',
+            //     ],
+            // ],
         ],
+
+
+        // 'rabbitmq' => [
+        //     'driver' => 'rabbitmq',
+        //     'queue'  => 'usuarios',
+        //     'hosts' => [
+        //         [
+        //             'host' => 'rabbitmq',
+        //             'port' => 5672,
+        //             'user' =>  'guest',
+        //             'password' => 'guest',
+        //             'vhost' => '/',
+        //         ],
+        //         // ...
+        //     ],
+            // 'queues' => [
+            //     'usuariosQueue' => [
+            //         'exchange' => 'usuariosExchange',
+            //         'routing_keys' => [
+            //             'user.created',
+            //             'user.updated',
+            //             'user.deleted'
+            //         ]
+            //     ],
+            // ],
+            // 'exchanges' => [
+            //     'usuariosExchange' => ['name' => 'usuariosExchange', 'type' => 'direct'],
+            // ],
+       // ...
+        // ],
 
     ],
 
