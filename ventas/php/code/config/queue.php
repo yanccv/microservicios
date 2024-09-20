@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sync'),
+    'default' => env('QUEUE_CONNECTION', 'rabbitmq'),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,22 +70,23 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
+
         'rabbitmq' => [
             'driver' => 'rabbitmq',
-            'queue'  => 'usuarios',
-            'hosts' => [
-                [
-                    'host' => 'rabbitmq',
-                    'port' => 5672,
-                    'user' =>  'guest',
-                    'password' => 'guest',
-                    'vhost' => '/',
+            'host' => env('RABBITMQ_HOST', 'rabbitmq'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'username' => env('RABBITMQ_USERNAME', 'guest'),
+            'password' => env('RABBITMQ_PASSWORD', 'guest'),
+            'vhost' => env('RABBITMQ_VHOST', '/'),
+            'queue' => 'usuariosQueue',
+            'options' => [
+                'exchange' => [
+                    'name' => 'usuariosExchange',
+                    'type' => 'direct', // Puedes usar otros tipos como direct, fanout
+                    'durable' => true,
                 ],
-                // ...
             ],
-       // ...
-        ],
-
+        ]
     ],
 
     /*

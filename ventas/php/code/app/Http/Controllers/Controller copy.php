@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
     /**
      * respuesta generalizada de la Api solo en formato Json
      *
@@ -115,5 +114,4 @@ class Controller extends BaseController
             return $this->responseJson(500, 'Error al eliminar el registro', '', $th->getMessage());
         }
     }
-
 }

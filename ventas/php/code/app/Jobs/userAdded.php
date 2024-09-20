@@ -13,15 +13,15 @@ use Illuminate\Queue\SerializesModels;
 class userAdded implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private $user;
+    private $data;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct($data)
     {
-        $this->user = $user;
+        $this->data = $data;
     }
 
     /**
@@ -31,16 +31,13 @@ class userAdded implements ShouldQueue
      */
     public function handle()
     {
-        echo 'Create User in Ventas Micro';
-        print_r($this->user);
+        echo PHP_EOL.PHP_EOL.'In ventas::userAdded';
+        print_r($this->data);
         try {
-            Usuario::create($this->user);
-
+            Usuario::create($this->data);
         } catch (\Throwable $th) {
             print_r($th->getMessage());
             throw new Exception("Error Processing Request", 1);
-
         }
-
     }
 }

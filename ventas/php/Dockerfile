@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+RUN sed -i 's\memory_limit = 128M\memory_limit = 512M\g' /usr/local/etc/php/php.ini
+#COPY php.ini /usr/local/etc/php/php.ini
 
 
 RUN chmod -R 775 /var/www

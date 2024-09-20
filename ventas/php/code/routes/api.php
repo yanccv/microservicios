@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\facturaController;
 use App\Http\Controllers\Api\productoController;
@@ -15,10 +16,6 @@ use App\Http\Controllers\Api\usuarioController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 /**
  * Rutas de los productos
@@ -46,3 +43,7 @@ Route::get('/facturas/{id}', [facturaController::class, 'get']);
 Route::post('/facturas', [facturaController::class, 'add']);
 // Route::patch('/facturas/{id}', [facturaController::class, 'edit']);
 Route::delete('/facturas/{id}', [facturaController::class, 'destroy']);
+
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

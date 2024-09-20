@@ -110,7 +110,7 @@ services:
       - "sales-db-data:/var/lib/mysql"
 
   sales-app:
-    build: ./usuarios/php/
+    build: ./ventas/php/
     container_name: sales-app
     restart: unless-stopped
     networks:

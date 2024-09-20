@@ -13,16 +13,16 @@ use Illuminate\Support\Facades\Queue;
 class userAdded implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private $user;
+    private $data;
     /**
      * Create a new job instance.
      *
      * @return void
      */
 
-    public function __construct($user)
+    public function __construct($data)
     {
-        $this->user = $user;
+        $this->data = $data;
     }
 
     /**
@@ -33,12 +33,24 @@ class userAdded implements ShouldQueue
     public function handle()
     {
         echo 'event userAdded [Usuarios] Send routingKey: user.added';
-        print_r($this->user);
+        // print_r($this->data);
+        // $this->dispatch($this->data);
 
-        Queue::connection('rabbitmq')->pushRaw(json_encode($this->user), '', [
-            'exchange' => 'usuariosExchange',
-            'routing_key' => 'user.added'
-        ]);
+
+        // Queue::connection('rabbitmq')
+        // ->pushRaw(
+        //     json_encode(['user' => $this->user, 'routing_key' => 'user.added']),
+        //     'usuariosQueue',
+        //     [
+        //     'exchange' => 'usuariosExchange',
+        //     'routing_key' => 'user.added'
+        //     ]
+        // );
+
+        // Queue::connection('rabbitmq')->pushRaw(json_encode($this->user), 'usuariosQueue', [
+        //     'exchange' => 'usuariosExchange',
+        //     'routing_key' => 'user.added'
+        // ]);
 
         // $userData = [
         //     'id' => $user->id,

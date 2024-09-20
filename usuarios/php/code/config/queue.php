@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sync'),
+    'default' => env('QUEUE_CONNECTION', 'rabbitmq'),
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     'connections' => [
 
         'sync' => [
-            'driver' => 'rabbitmq',
+            'driver' => 'sync',
         ],
 
         'database' => [
@@ -79,12 +79,46 @@ return [
             'username' => env('RABBITMQ_USERNAME', 'guest'),
             'password' => env('RABBITMQ_PASSWORD', 'guest'),
             'vhost' => env('RABBITMQ_VHOST', '/'),
-            'queue' => 'usuariosQueue',
-            'exchange' => [
-                'name' => env('RABBITMQ_EXCHANGE_NAME', 'usuariosExchange'),
-                'type' => 'direct', // O 'topic', según el tipo de enrutamiento
-                'durable' => true, // Mantiene los mensajes incluso si RabbitMQ reinicia
+            'queue' => env('QUEUE_DEFAULT', 'usuariosQueue'),
+            // 'options' => [
+            //     'queue' => [
+            //         'exchange' => 'usuariosExchange',
+            //         'exchange_type' => 'direct',
+            //         'exchange_routing_key' => '%s',
+            //     ],
+            // ],
+
+
+
+            'connections' => [
+                'default' => [
+                    'exchange' => [
+                        'name' => 'usuariosExchange',
+                        'type' => 'direct',
+                        'durable' => true,
+                    ],
+                ],
             ],
+            // 'queue' => 'usuariosQueue',
+            // 'exchange' => 'usuariosExchange',
+            // 'queues' => [
+            //     'usuariosQueue' => ['queue' => 'usuariosQueue', 'routing_key' => 'user.*'],
+            //     // 'order.created' => ['queue' => 'order_created', 'routing_key' => 'order.created'],
+            //     // 'payment.completed' => ['queue' => 'payment_completed', 'routing_key' => 'payment.completed'],
+            // ],
+            // 'queue' => 'usuariosQueue',
+            // 'exchange' => [
+            //     'name' => env('RABBITMQ_EXCHANGE_NAME', 'usuariosExchange'),
+            //     'type' => 'direct', // O 'topic', según el tipo de enrutamiento
+            //     'durable' => true, // Mantiene los mensajes incluso si RabbitMQ reinicia
+            // ],
+            // 'options' => [
+            //     'exchange' => [
+            //         'name' => 'usuariosExchange',
+            //         'type' => 'direct', // Puedes usar otros tipos como direct, fanout
+            //         'durable' => true,
+            //     ],
+            // ],
             // 'queues' => [
             //     'ventas' => 'ventas',
             //     'delay' => 'delay',
@@ -96,37 +130,6 @@ return [
             //     ],
             // ],
         ],
-
-
-        // 'rabbitmq' => [
-        //     'driver' => 'rabbitmq',
-        //     'queue'  => 'usuarios',
-        //     'hosts' => [
-        //         [
-        //             'host' => 'rabbitmq',
-        //             'port' => 5672,
-        //             'user' =>  'guest',
-        //             'password' => 'guest',
-        //             'vhost' => '/',
-        //         ],
-        //         // ...
-        //     ],
-            // 'queues' => [
-            //     'usuariosQueue' => [
-            //         'exchange' => 'usuariosExchange',
-            //         'routing_keys' => [
-            //             'user.created',
-            //             'user.updated',
-            //             'user.deleted'
-            //         ]
-            //     ],
-            // ],
-            // 'exchanges' => [
-            //     'usuariosExchange' => ['name' => 'usuariosExchange', 'type' => 'direct'],
-            // ],
-       // ...
-        // ],
-
     ],
 
     /*

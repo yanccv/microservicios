@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\RabbitMQProducer;
 use App\Http\Controllers\Controller;
 use App\Jobs\userAdded;
 use App\Jobs\userDeleted;
 use App\Jobs\userUpdated;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Validator;
 
     // TODO
@@ -21,6 +23,13 @@ Validator::extend('unique_email', function ($attribute, $value, $parameters, $va
 
 class usuarioController extends Controller
 {
+    protected $rabbitMQProducer;
+
+    public function __construct(RabbitMQProducer $rabbitMQProducer)
+    {
+        $this->rabbitMQProducer = $rabbitMQProducer;
+    }
+
     /**
      * Validacion de los campos del modelo Usuario
      */
@@ -81,7 +90,20 @@ class usuarioController extends Controller
         if (!isset($addRecord->created)) {
             return $addRecord;
         } elseif ($addRecord->created) {
-            userAdded::dispatch($addRecord->record);
+            // userAdded::dispatch($addRecord->record);
+            // $this->rabbitMQProducer->publishUserAdded($addRecord->record);
+            Queue::pushOn('usuariosQueue', 'userAdded', $addRecord->record, 'user.added');
+            // Queue::push('userAdded', ['data' => $this->user, 'routing_key' => 'user.added'], 'rabbitmq');
+            // Queue::push(
+            //     'processUsuariosQueue',
+            //     [
+            //         'user' => $addRecord->record,
+            //         'routing_key' => 'user.added'
+            //     ],
+            //     'usuariosQueue'
+            // );
+
+
             return $this->responseJson(201, 'Registro Agregado', $addRecord->record);
         }
 
@@ -106,7 +128,8 @@ class usuarioController extends Controller
             $usuario = Usuario::findOrFail($id);
             $usuario->update($request->all());
 
-            userUpdated::dispatch($usuario->toArray());
+            // userUpdated::dispatch($usuario->toArray());
+            Queue::pushOn('usuariosQueue', 'userUpdated', $usuario->toArray(), 'user.updated');
             return $this->responseJson(200, 'Actualizacion Exitosa', $usuario);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro no encontrado');
@@ -134,19 +157,20 @@ class usuarioController extends Controller
         if (!isset($updatedRecord->updated)) {
             return $updatedRecord;
         } elseif ($updatedRecord->updated) {
-            userUpdated::dispatch($updatedRecord->record);
+            // userUpdated::dispatch($updatedRecord->record);
+            Queue::pushOn('usuariosQueue', 'userUpdated', $updatedRecord->record, 'user.updated');
+
             return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
         }
     }
 
     public function destroy(int $id)
     {
-
         $deletedRecord = (Object) $this->destroyGeneral(Usuario::class, $id);
         if (!isset($deletedRecord->deleted)) {
             return $deletedRecord;
         } elseif ($deletedRecord->deleted) {
-            userDeleted::dispatch($id);
+            Queue::pushOn('usuariosQueue', 'userDeleted', ['id' => $id], 'user.deleted');
             return $this->responseJson(200, 'Registro eliminado');
         }
     }

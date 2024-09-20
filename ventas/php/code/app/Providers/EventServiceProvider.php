@@ -8,8 +8,8 @@ use App\Jobs\userUpdated;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\App;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -31,9 +31,9 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        App::bindMethod(userAdded::class, fn($obj) => $obj->handle());
-        App::bindMethod(userUpdated::class, fn($obj) => $obj->handle());
-        App::bindMethod(userDeleted::class, fn($obj) => $obj->handle());
+        // App::bindMethod(userAdded::class, fn($obj) => $obj->handle());
+        // App::bindMethod(userUpdated::class, fn($obj) => $obj->handle());
+        // App::bindMethod(userDeleted::class, fn($obj) => $obj->handle());
     }
 
     /**
