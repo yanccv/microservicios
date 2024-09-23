@@ -72,15 +72,20 @@ return [
         ],
         'rabbitmq' => [
             'driver' => 'rabbitmq',
-            'hosts' => [
-                [
-                    'host' => 'rabbitmq',
-                    'port' => 5672,
-                    'user' =>  'guest',
-                    'password' => 'guest',
-                    'vhost' => '/',
+            'host' => env('RABBITMQ_HOST', 'rabbitmq'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'username' => env('RABBITMQ_USERNAME', 'guest'),
+            'password' => env('RABBITMQ_PASSWORD', 'guest'),
+            'vhost' => env('RABBITMQ_VHOST', '/'),
+            'queue' => env('QUEUE_DEFAULT', 'productosQueue'),
+            'connections' => [
+                'default' => [
+                    'exchange' => [
+                        'name' => 'productosExchange',
+                        'type' => 'direct',
+                        'durable' => true,
+                    ],
                 ],
-                // ...
             ],
        // ...
         ],
