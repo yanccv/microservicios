@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('unidades', function (Blueprint $table) {
             $table->id();
-            $table->string('unidad');
+            $table->string('nombre');
+            $table->string('siglas');
             $table->enum('estatus', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
         });

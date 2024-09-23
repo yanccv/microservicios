@@ -9,7 +9,9 @@ class Unidades extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['unidad', 'siglas', 'estatus'];
+    protected $table = 'unidades';
+    protected $primaryKey = 'id';
+    protected $fillable = ['nombre', 'siglas', 'estatus'];
 
     protected $attributes = [
         'estatus' => 'Activo',
@@ -17,6 +19,10 @@ class Unidades extends Model
 
     public function productos()
     {
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(
+            Producto::class,
+            'unidades_id',
+            'id',
+        );
     }
 }

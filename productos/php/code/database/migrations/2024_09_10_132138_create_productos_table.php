@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idcategoria')->constrained('categorias');
+            $table->unsignedBigInteger('categorias_id');
+            $table->unsignedBigInteger('unidades_id');
+            $table->foreign('categorias_id')->references('id')->on('categorias');
+            $table->foreign('unidades_id')->references('id')->on('unidades');
             $table->string('producto');
             $table->decimal('precio', 8, 2);
             $table->integer('existencia');
