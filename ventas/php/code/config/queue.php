@@ -78,14 +78,24 @@ return [
             'username' => env('RABBITMQ_USERNAME', 'guest'),
             'password' => env('RABBITMQ_PASSWORD', 'guest'),
             'vhost' => env('RABBITMQ_VHOST', '/'),
-            'queue' => 'usuariosQueue',
+            'queue' => [
+                'usuariosQueue',
+                'productosQueue'
+            ],
             'options' => [
                 'exchange' => [
-                    'name' => 'usuariosExchange',
-                    'type' => 'direct', // Puedes usar otros tipos como direct, fanout
-                    'durable' => true,
+                    'usuariosQueue' => 'usuariosExchange',
+                    'productosQueue' => 'productosExchange',
                 ],
             ],
+            // 'queue' => 'usuariosQueue',
+            // 'options' => [
+            //     'exchange' => [
+            //         'name' => 'usuariosExchange',
+            //         'type' => 'direct', // Puedes usar otros tipos como direct, fanout
+            //         'durable' => true,
+            //     ],
+            // ],
         ]
     ],
 
