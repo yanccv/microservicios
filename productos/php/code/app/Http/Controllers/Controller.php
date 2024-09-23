@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Routing\Controller as BaseController;
 
 use Illuminate\Support\Facades\Validator;
@@ -42,12 +42,12 @@ class Controller extends BaseController
      * @param array $conditions validaciones a realizar campo a campo
      * @return \Illuminate\Http\JsonResponse | true
      */
-    public function validatorData(ClientRequest $request, array $conditions)
+    public function validatorData(array $request, array $conditions)
     {
-        if (empty($request->all())) {
+        if (empty($request)) {
             return $this->responseJson(400, 'Formulario Vacio');
         }
-        $validator = Validator::make($request->all(), $conditions);
+        $validator = Validator::make($request, $conditions);
         if ($validator->fails()) {
             return $this->responseJson(400, 'Error en la validación de los datos',null, $validator->errors());
         }
@@ -79,11 +79,11 @@ class Controller extends BaseController
      * @param [type] $request Valores a insertar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function addData($model, $request) : \Illuminate\Http\JsonResponse
+    public function addData($model, $request) : \Illuminate\Http\JsonResponse | array
     {
         try {
-            $categoria = $model::create($request->all());
-            return $this->responseJson(201, 'Registro Agregado', $categoria);
+            $record = $model::create($request->all());
+            return ['created' => true, 'record' => $record];
         } catch (\Throwable $th) {
             return $this->responseJson(500, 'Error al Crear ', '', $th->getMessage());
         }
@@ -98,16 +98,20 @@ class Controller extends BaseController
      * @param [type] $request Valores actualizables
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateSingle($model, $id, $request) : \Illuminate\Http\JsonResponse
+    public function updateSingle($model, $id, $request) : \Illuminate\Http\JsonResponse | array
     {
         try {
-            $unidad = $model::findOrFail($id);
-            $unidad->fill($request->all());
-            if (!$unidad->isDirty()) {
-                return $this->responseJson(200, 'Sin Cambios a Actualizar', $unidad);
+            $record = $model::findOrFail($id);
+            $record->fill($request->all());
+            if (!$record->isDirty()) {
+                return $this->responseJson(200, 'Sin Cambios a Actualizar', $record);
             }
-            $unidad->save();
-            return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
+            $fieldsUpdated = $record->getDirty();
+            $record->save();
+            $fieldsUpdated['id'] = $id;
+            return ['updated' => true, 'record' => $fieldsUpdated];
+            // $unidad->save();
+            // return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro no encontrado');
         } catch (\Throwable $th) {
@@ -122,12 +126,13 @@ class Controller extends BaseController
      * @param integer $id identificador del registro a eliminar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroyGeneral($model, int $id) : \Illuminate\Http\JsonResponse
+    public function destroyGeneral($model, int $id) : \Illuminate\Http\JsonResponse | array
     {
         try {
             $registerToRemove = $model::findOrFail($id);
             $registerToRemove->delete();
-            return $this->responseJson(200, 'Registro eliminado');
+            return ['deleted' => true];
+            // return $this->responseJson(200, 'Registro eliminado');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro No encontrado');
         } catch (\Throwable $th) {

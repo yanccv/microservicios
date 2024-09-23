@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class unidadController extends Controller
 {
     var $conditional = [
-        'unidad'    => 'required',
+        'nombre'    => 'required',
         'siglas'    => 'required'
     ];
 
@@ -33,10 +33,15 @@ class unidadController extends Controller
      */
     public function add(Request $request) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
             return $validator;
         }
-        return $this->addData(Unidades::class, $request);
+        $addRecord = (object) $this->addData(Unidades::class, $request);
+        if (!isset($addRecord->created)) {
+            return $addRecord;
+        } elseif ($addRecord->created) {
+            return $this->responseJson(201, 'Registro Agregado', $addRecord->record->toArray());
+        }
     }
 
     /**
@@ -54,7 +59,7 @@ class unidadController extends Controller
         try {
             $unidad = Unidades::findOrFail($id);
             $unidad->update([
-                'unidad' => $request->unidad,
+                'nombre' => $request->nombre,
             ]);
             return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
@@ -75,10 +80,15 @@ class unidadController extends Controller
     {
         //return array_intersect_key($request->all(), $this->conditional);
         $conditional = array_intersect_key($this->conditional, $request->all());
-        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
             return $validator;
         }
-        return $this->updateSingle(Unidades::class, $id, $request);
+        $updatedRecord =  (object) $this->updateSingle(Unidades::class, $id, $request);
+        if (!isset($updatedRecord->updated)) {
+            return $updatedRecord;
+        } elseif ($updatedRecord->updated) {
+            return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
+        }
     }
 
     /**
@@ -89,6 +99,12 @@ class unidadController extends Controller
      */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
-        return $this->destroyGeneral(Unidades::class, $id);
+        // return $this->destroyGeneral(Unidades::class, $id);
+        $deletedRecord = (Object) $this->destroyGeneral(Unidades::class, $id);
+        if (!isset($deletedRecord->deleted)) {
+            return $deletedRecord;
+        } elseif ($deletedRecord->deleted) {
+            return $this->responseJson(200, 'Registro eliminado');
+        }
     }
 }

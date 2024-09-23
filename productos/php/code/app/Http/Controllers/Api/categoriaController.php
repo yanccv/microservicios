@@ -12,7 +12,7 @@ class categoriaController extends Controller
      * Validacion de los campos del modelo Categoria
      */
     var $conditional = [
-        'categoria'      => 'required'
+        'nombre'      => 'required'
     ];
 
     /**
@@ -34,10 +34,17 @@ class categoriaController extends Controller
      */
     public function add(Request $request) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
             return $validator;
         }
-        return $this->addData(Categoria::class, $request);
+        // return $this->addData(Categoria::class, $request);
+        $addRecord = (object) $this->addData(Categoria::class, $request);
+        if (!isset($addRecord->created)) {
+            return $addRecord;
+        } elseif ($addRecord->created) {
+            return $this->responseJson(201, 'Registro Agregado', $addRecord->record->toArray());
+        }
+
     }
 
     /**
@@ -49,13 +56,13 @@ class categoriaController extends Controller
      */
     public function edit(Request $request, int $id) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
             return $validator;
         }
         try {
             $categoria = Categoria::findOrFail($id);
             $categoria->update([
-                'categoria' => $request->categoria,
+                'nombre' => $request->nombre,
             ]);
             return $this->responseJson(200, 'Actualizacion Exitosa', $categoria);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
@@ -75,10 +82,16 @@ class categoriaController extends Controller
     public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
     {
         $conditional = array_intersect_key($this->conditional, $request->all());
-        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
             return $validator;
         }
-        return $this->updateSingle(Categoria::class, $id, $request);
+        // return $this->updateSingle(Categoria::class, $id, $request);
+        $updatedRecord =  (object) $this->updateSingle(Categoria::class, $id, $request);
+        if (!isset($updatedRecord->updated)) {
+            return $updatedRecord;
+        } elseif ($updatedRecord->updated) {
+            return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
+        }
     }
 
     /**
@@ -89,6 +102,13 @@ class categoriaController extends Controller
      */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
-        return $this->destroyGeneral(Categoria::class, $id);
+        // return $this->destroyGeneral(Categoria::class, $id);
+        $deletedRecord = (Object) $this->destroyGeneral(Categoria::class, $id);
+        if (!isset($deletedRecord->deleted)) {
+            return $deletedRecord;
+        } elseif ($deletedRecord->deleted) {
+            Queue::pushOn('usuariosQueue', 'userDeleted', ['id' => $id], 'user.deleted');
+            return $this->responseJson(200, 'Registro eliminado');
+        }
     }
 }

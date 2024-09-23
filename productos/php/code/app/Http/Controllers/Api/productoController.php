@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Producto;
+use App\Models\Unidades;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
 
 class productoController extends Controller
 {
@@ -14,7 +16,7 @@ class productoController extends Controller
     var $conditional = [
         'producto'      => 'required',
         'precio'        => 'nullable|numeric',
-        'idcategoria'   => 'required'
+        'categorias_id'   => 'required'
     ];
 
 
@@ -54,10 +56,19 @@ class productoController extends Controller
      */
     public function add(Request $request) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
             return $validator;
         }
-        return $this->addData(Producto::class, $request);
+        $addRecord = (object) $this->addData(Producto::class, $request);
+        if (!isset($addRecord->created)) {
+            return $addRecord;
+        } elseif ($addRecord->created) {
+            $product = $addRecord->record->toArray();
+            $addRecord->record->load('unidad')->nombre;
+            $product['unidad'] = $addRecord->record->unidad->nombre;
+            Queue::pushOn('productosQueue', 'productAdded', $product, 'product.added');
+            return $this->responseJson(201, 'Registro Agregado Categoria:', $product);
+        }
     }
 
     /**
@@ -101,7 +112,16 @@ class productoController extends Controller
         if (($validator = $this->validatorData($request, $conditional)) !== true) {
             return $validator;
         }
-        return $this->updateSingle(Producto::class, $id, $request);
+
+        $updatedRecord =  (object) $this->updateSingle(Producto::class, $id, $request);
+        if (!isset($updatedRecord->updated)) {
+            return $updatedRecord;
+        } elseif ($updatedRecord->updated) {
+            // userUpdated::dispatch($updatedRecord->record);
+            Queue::pushOn('productosQueue', 'productUpdated', $updatedRecord->record, 'product.updated');
+            return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
+        }
+        // return $this->updateSingle(Producto::class, $id, $request);
     }
 
 
@@ -113,6 +133,13 @@ class productoController extends Controller
      */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
-        return $this->destroyGeneral(Producto::class, $id);
+        $deletedRecord = (Object) $this->destroyGeneral(Producto::class, $id);
+        if (!isset($deletedRecord->deleted)) {
+            return $deletedRecord;
+        } elseif ($deletedRecord->deleted) {
+            Queue::pushOn('productosQueue', 'productDeleted', ['id' => $id], 'product.deleted');
+            return $this->responseJson(200, 'Registro eliminado');
+        }
+        // return $this->destroyGeneral(Producto::class, $id);
     }
 }
