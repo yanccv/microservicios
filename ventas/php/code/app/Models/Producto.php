@@ -16,7 +16,6 @@ class Producto extends Model
      */
     protected $fillable = [
         'producto',
-        'unidad',
         'precio',
         'existencia',
         'impuesto',
