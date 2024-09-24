@@ -88,17 +88,23 @@ return [
             //     ],
             // ],
 
-
-
-            'connections' => [
-                'default' => [
-                    'exchange' => [
-                        'name' => 'usuariosExchange',
-                        'type' => 'direct',
-                        'durable' => true,
-                    ],
+            'exchanges' => [
+                'usuariosExchange' => [
+                    'name' => 'usuariosExchange',
+                    'type' => 'direct',
+                    'durable' => true
                 ],
             ],
+
+            // 'connections' => [
+            //     'rabbitmq' => [
+            //         'exchange' => [
+            //             'name' => 'usuariosExchange',
+            //             'type' => 'direct',
+            //             'durable' => true,
+            //         ],
+            //     ],
+            // ],
             // 'queue' => 'usuariosQueue',
             // 'exchange' => 'usuariosExchange',
             // 'queues' => [

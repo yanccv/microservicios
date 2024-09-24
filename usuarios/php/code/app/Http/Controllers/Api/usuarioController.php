@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Services\RabbitMQProducer;
 use App\Http\Controllers\Controller;
-use App\Jobs\userAdded;
-use App\Jobs\userDeleted;
-use App\Jobs\userUpdated;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Queue;
@@ -52,7 +49,7 @@ class usuarioController extends Controller
     {
         $data = Usuario::all();
         if ($data->isEmpty()) {
-            return $this->responseJson(40, 'No se encontraron usuarios');
+            return $this->responseJson(400, 'No se encontraron usuarios');
         }
         return $this->responseJson(200, '', $data);
     }
@@ -93,6 +90,7 @@ class usuarioController extends Controller
             // userAdded::dispatch($addRecord->record);
             // $this->rabbitMQProducer->publishUserAdded($addRecord->record);
             Queue::pushOn('usuariosQueue', 'userAdded', $addRecord->record, 'user.added');
+            // Queue::pushRaw(json_encode($addRecord->record), 'usuariosQueue', ['exchange_type' => 'direct', 'exchange' => 'usuariosExchange']);
             // Queue::push('userAdded', ['data' => $this->user, 'routing_key' => 'user.added'], 'rabbitmq');
             // Queue::push(
             //     'processUsuariosQueue',

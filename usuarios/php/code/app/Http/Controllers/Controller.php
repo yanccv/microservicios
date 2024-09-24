@@ -119,4 +119,5 @@ class Controller extends BaseController
             return $this->responseJson(500, 'Error al eliminar el registro', '', $th->getMessage());
         }
     }
+
 }

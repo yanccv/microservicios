@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\usuarioController;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,5 +28,6 @@ Route::patch('/usuarios/{id}', [usuarioController::class, 'set'])->where('id', '
 
 Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy'])->where('id', '[0-9]+');
 
-
-// s
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
