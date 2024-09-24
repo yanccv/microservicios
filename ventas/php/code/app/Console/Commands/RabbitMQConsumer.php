@@ -52,7 +52,7 @@ class RabbitMQConsumer extends Command
         // Declarar la cola que se va a consumir
         $queue = 'usuariosQueue'; // Nombre de la cola que estás usando
         $exchange_name ="usuariosExchange";
-        $this->channel->exchange_declare($exchange_name, 'direct', true, false, false);
+        // $this->channel->exchange_declare($exchange_name, 'direct', true, false, false);
         $this->channel->queue_declare($queue, false, true, false, false, false, []);
 
         // Definir la función de callback para manejar los mensajes
@@ -69,6 +69,7 @@ class RabbitMQConsumer extends Command
 
             print_r(substr($data->job, strrpos('/', $data->job)));
             switch (substr($data->job, strrpos('/', $data->job))) {
+
                 case 'userAdded':
                     $userAdded = new userAdded($data->data);
                     $userAdded->handle();
@@ -100,11 +101,13 @@ class RabbitMQConsumer extends Command
         };
 
         // Escuchar la cola
+        $this->channel->basic_qos(null, 1, null);
         $this->channel->basic_consume($queue, '', false, false, false, false, $callback);
 
         while ($this->channel->is_consuming()) {
             $this->channel->wait();
         }
+        return Command::SUCCESS;
     }
 
     public function __destruct()
