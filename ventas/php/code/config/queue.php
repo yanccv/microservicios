@@ -78,16 +78,19 @@ return [
             'username' => env('RABBITMQ_USERNAME', 'guest'),
             'password' => env('RABBITMQ_PASSWORD', 'guest'),
             'vhost' => env('RABBITMQ_VHOST', '/'),
-            'queue' => [
-                'usuariosQueue',
-                'productosQueue'
-            ],
-            'options' => [
-                'exchange' => [
-                    'usuariosQueue' => 'usuariosExchange',
-                    'productosQueue' => 'productosExchange',
-                ],
-            ],
+            // 'queue' => [
+            //     'usuariosQueue',
+            //     'productosQueue',
+            //     'facturasQueue'
+            // ],
+            // 'queue' => env('QUEUE_DEFAULT', 'facturasQueue'),
+            // 'queue' => 'facturasQueue',
+            // 'options' => [
+            //     'exchange' => [
+            //         'usuariosQueue' => 'usuariosExchange',
+            //         'productosQueue' => 'productosExchange',
+            //     ],
+            // ],
             // 'queue' => 'usuariosQueue',
             // 'options' => [
             //     'exchange' => [
