@@ -28,5 +28,13 @@ class Usuario extends Model
         'estatus'
     ];
 
+    public function facturas()
+    {
+        return $this->hasMany(
+            DetalleFactura::class,
+            'facturas_id',
+            'id'
+        );
+    }
 
 }

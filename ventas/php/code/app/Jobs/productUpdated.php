@@ -21,7 +21,7 @@ class productUpdated implements ShouldQueue
      */
     public function __construct($data)
     {
-        $this->$data = $data;
+        $this->data = $data;
     }
 
     /**
@@ -32,10 +32,10 @@ class productUpdated implements ShouldQueue
     public function handle()
     {
         echo 'Update Product in Micro Ventas';
-        print_r($this->user);
+        print_r($this->data);
         try {
-            $usuario = Producto::findOrFail($this->user['id']);
-            $usuario->update($this->user);
+            $usuario = Producto::findOrFail($this->data['id']);
+            $usuario->update($this->data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Registro no encontrado');
         } catch (\Throwable $th) {

@@ -8,14 +8,14 @@ use App\Jobs\productUpdated;
 use Illuminate\Console\Command;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-class productQueueConsume extends Command
+class productosQueueConsume extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'rabbitmq:productQueueConsume';
+    protected $signature = 'rabbitmq:productosQueueConsume';
     protected $description = 'Consume messages from ProductsQueue';
 
     protected $connection;
@@ -45,10 +45,10 @@ class productQueueConsume extends Command
      */
     public function handle()
     {
-        echo 'handler productsQueue';
+        echo 'handler productsQueueCommand';
         $queue = 'productosQueue'; // Nombre de la cola que estás usando
-        $exchange_name ="productosExchange";
-        $this->channel->exchange_declare($exchange_name, 'direct', true, false, false);
+        // $exchange_name ="productosExchange";
+        // $this->channel->exchange_declare($exchange_name, 'direct', true, false, false);
         $this->channel->queue_declare($queue, false, true, false, false, false, []);
 
         // Definir la función de callback para manejar los mensajes
@@ -56,6 +56,7 @@ class productQueueConsume extends Command
             $data = (object) json_decode($msg->body, true);
             // echo PHP_EOL.gettype($data->data);
             print_r($data->data);
+            // var_dump($data->data);
             switch (substr($data->job, strrpos('/', $data->job))) {
                 case 'productAdded':
                     $productAdded = new productAdded($data->data);

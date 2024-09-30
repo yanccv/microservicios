@@ -8,20 +8,21 @@ use App\Models\Factura;
 use App\Models\Producto;
 use Illuminate\Container\Attributes\Database;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
 class facturaController extends Controller
 {
 
     var $conditionalFactura = [
-        'idusuario' => 'required'
+        'usuarios_id' => 'required'
     ];
 
     var $conditionalDetalleFactura = [
-        'idproducto'    => 'required',
+        'productos_id'    => 'required',
         'producto'      => 'required',
-        'precio'        => 'required|integer',
-        'cantidad'      => 'required|integer',
-        'impuesto'      => 'required|integer',
+        'precio'        => 'required|numeric',
+        'cantidad'      => 'required|numeric',
     ];
 
     /**
@@ -59,43 +60,44 @@ class facturaController extends Controller
         // print_r(json_encode($request->detalle));
         // echo gettype(json_decode($request->detalle));
         // echo '</pre>';
-        foreach ($request->detalleProducto as $fieldProduct => $productoDetalle) {
-            // Buscar el Producto en mi miro
-            try {
-                $producto = Producto::findOrFail($productoDetalle['idproducto']);
-            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-                return $this->responseJson(404, 'Producto no encontrado');
-            } catch (\Throwable $th) {
-                return $this->responseJson(500, 'Error al no se obtuvieron datos', '', $th->getMessage());
-            }
-
-
-            $detalleFactura = new DetalleFactura();
-
-            if (($validator = $this->validatorData($productoDetalle, $this->conditionalDetalleFactura)) !== true) {
-                return $validator;
-            }
-
-            return $detalleFactura->fill($productoDetalle, $producto);
-        }
 
 
         try {
-            DB::transaction(function () use ($request) {
-                $factura = new Factura();
-                $factura->idusuario = $request->idusuario;
-                // Crear los detalles de la factura
-                foreach ($request->detalles as $detalle) {
-                    $factura->detalles()->create($detalle);
+            DB::beginTransaction();
+            $factura = new Factura();
+            $factura->fill($request->toArray());
+            $factura->save();
+            foreach ($request->detalleProducto as $fieldProduct => $productoDetalle) {
+
+                // Buscar el Producto en mi miro
+                $producto = Producto::findOrFail($productoDetalle['productos_id']);
+                $productoDetalle['facturas_id'] = $factura->id;
+                $productosDetalle = array_merge($producto->toArray(), $productoDetalle);
+
+                $detalleFactura = new DetalleFactura();
+                if (($validator = $this->validatorData($productosDetalle, $this->conditionalDetalleFactura)) !== true) {
+                    return $validator;
                 }
-                return $this->responseJson(500, 'Venta Procesada', $factura);
-            });
+                $detalleFactura->fill($productosDetalle);
+                $detalleFactura->save();
+
+                $producto->existencia -= $productoDetalle['cantidad'];
+                $producto->save();
+            }
+
+            DB::commit();
+            Queue::pushOn('facturasQueue', 'facturaAdded', $request->detalleProducto, 'factura.added');
+            return $this->responseJson(201, 'Factura Guardada');
         } catch (\illuminate\Database\QueryException $e){
+            DB::rollBack();
             return $this->responseJson(500, 'Error al guardar los datos', '', $e->getMessage());
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+            DB::rollBack();
+            return $this->responseJson(404, 'Producto no encontrado');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->responseJson(500, 'Error inesperado', '', $th->getMessage());
         }
-         catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error ineperado', '', $th->getMessage());
-        }
-        return $this->addData(Producto::class, $request);
+        // return $this->addData(Producto::class, $request);
     }
 }

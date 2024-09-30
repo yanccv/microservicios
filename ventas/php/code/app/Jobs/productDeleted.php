@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Producto;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,7 +21,7 @@ class productDeleted implements ShouldQueue
      */
     public function __construct($id)
     {
-        $this->$id = $id;
+        $this->id = $id;
     }
 
     /**

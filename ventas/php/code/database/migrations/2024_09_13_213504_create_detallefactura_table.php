@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('detallefactura', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idfactura')->constrained('facturas');
-            $table->foreignId('idproducto')->constrained('productos');
+            $table->foreignId('facturas_id')->constrained('facturas');
+            $table->foreignId('productos_id')->constrained('productos');
             $table->string('producto');
             $table->decimal('precio', 8, 2);
             $table->integer('cantidad');
-            $table->integer('impuesto');
             $table->timestamps();
         });
     }

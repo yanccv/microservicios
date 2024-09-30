@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Factura extends Model
 {
     use HasFactory;
-
+    protected $table = 'facturas';
+    protected $primaryKey = 'id';
     /**
      * Atributos asignables
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'idusuario',
+        'usuarios_id',
         'fechaanulada',
         'estatus',
     ];
@@ -29,8 +30,21 @@ class Factura extends Model
         'estatus'       => 'Activo',
     ];
 
-    public function detalleFactura()
+    public function detalles()
     {
-        return $this->hasMany(DetalleFactura::class);
+        return $this->hasMany(
+            DetalleFactura::class,
+            'facturas_id',
+            'id'
+        );
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(
+            Usuario::class,
+            'usuarios_id',
+            'id'
+        );
     }
 }

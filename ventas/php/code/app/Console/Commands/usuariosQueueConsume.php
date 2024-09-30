@@ -9,14 +9,14 @@ use Illuminate\Console\Command;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Illuminate\Support\Facades\App;
 
-class RabbitMQConsumer extends Command
+class usuariosQueueConsume extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'rabbitmq:consumes';
+    protected $signature = 'rabbitmq:usuariosQueueConsume';
     protected $description = 'Consume messages from RabbitMQ';
 
     protected $connection;

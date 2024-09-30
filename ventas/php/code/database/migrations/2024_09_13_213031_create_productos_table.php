@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('productos', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id')->unsigned(true)->primary()->autoIncrement(false);
             $table->string('producto');
             $table->decimal('precio', 8, 2);
             $table->integer('existencia');
-            $table->decimal('impuesto',6,2);
             $table->enum('estatus', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
         });

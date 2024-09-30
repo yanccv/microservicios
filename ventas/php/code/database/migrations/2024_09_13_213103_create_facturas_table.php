@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('facturas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idusuario')->constrained('usuarios');
+            $table->foreignId('usuarios_id')->constrained('usuarios');
             $table->dateTime('fechaanulada')->nullable();
             $table->enum('estatus', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
