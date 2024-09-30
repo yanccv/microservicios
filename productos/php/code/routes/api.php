@@ -24,6 +24,7 @@ Route::get('/productos', [productoController::class, 'list']);
 Route::get('/productos/{id}', [productoController::class, 'get']);
 Route::post('/productos', [productoController::class, 'add']);
 Route::put('/productos/{id}', [productoController::class, 'edit']);
+Route::patch('/productos/{id}', [productoController::class, 'set']);
 Route::delete('/productos/{id}', [productoController::class, 'destroy']);
 
 /**

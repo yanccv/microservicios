@@ -63,11 +63,8 @@ class productoController extends Controller
         if (!isset($addRecord->created)) {
             return $addRecord;
         } elseif ($addRecord->created) {
-            $product = $addRecord->record->toArray();
-            $addRecord->record->load('unidad')->nombre;
-            $product['unidad'] = $addRecord->record->unidad->nombre;
-            Queue::pushOn('productosQueue', 'productAdded', $product, 'product.added');
-            return $this->responseJson(201, 'Registro Agregado Categoria:', $product);
+            Queue::pushOn('productosQueue', 'productAdded', $addRecord->record->toArray(), 'product.added');
+            return $this->responseJson(201, 'Registro Agregado Categoria:', $addRecord->record->toArray());
         }
     }
 
@@ -78,9 +75,9 @@ class productoController extends Controller
      * @param integer $id identificador del registro a editar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    public function edit(Request $request, int $id) //: \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
             return $validator;
         }
         try {
@@ -90,6 +87,7 @@ class productoController extends Controller
                 'precio' => $request->precio,
                 'idcategoria' => $request->idcategoria,
             ]);
+            Queue::pushOn('productosQueue', 'productUpdated', $producto->toArray(), 'product.updated');
             return $this->responseJson(200, 'Actualizacion Exitosa', $producto);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Producto no encontrado');
@@ -109,7 +107,7 @@ class productoController extends Controller
     public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
     {
         $conditional = array_intersect_key($this->conditional, $request->all());
-        if (($validator = $this->validatorData($request, $conditional)) !== true) {
+        if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
             return $validator;
         }
 
