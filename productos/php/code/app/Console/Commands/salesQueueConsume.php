@@ -6,6 +6,9 @@ use App\Jobs\salesAdded;
 use Illuminate\Console\Command;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
+/**
+ * Clase encargada de consumir la cola de los sales o ventas
+ */
 class salesQueueConsume extends Command
 {
     /**
@@ -24,7 +27,6 @@ class salesQueueConsume extends Command
         parent::__construct();
 
         // Establecer conexión con RabbitMQ
-
         $this->connection = new AMQPStreamConnection(
             env('RABBITMQ_HOST', config('queue.connections.rabbitmq.host')),
             env('RABBITMQ_PORT', config('queue.connections.rabbitmq.port')),
@@ -44,7 +46,7 @@ class salesQueueConsume extends Command
     {
 
         echo 'handler salesQueueCommand';
-        $queue = 'salesQueue'; // Nombre de la cola que estás usando
+        $queue = 'facturasQueue'; // Nombre de la cola que estás usando
         // $exchange_name ="productosExchange";
         // $this->channel->exchange_declare($exchange_name, 'direct', true, false, false);
         $this->channel->queue_declare($queue, false, true, false, false, false, []);

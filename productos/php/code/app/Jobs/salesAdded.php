@@ -32,22 +32,31 @@ class salesAdded implements ShouldQueue
      */
     public function handle()
     {
+        echo PHP_EOL.'Update existencia in Product with Sale Event';
         try {
             DB::beginTransaction();
-            foreach ($this->data as $key => $productItem) {
+            foreach ($this->data['products'] as $key => $productItem) {
                 $producto = Producto::findOrFail($productItem['productos_id']);
                 $producto->existencia -= $productItem['cantidad'];
                 $producto->save();
             }
+            DB::commit();
+            echo PHP_EOL.'Update in Products FacturaID: ['.$this->data['facturas_id'].']';
         } catch (\illuminate\Database\QueryException $e){
             DB::rollBack();
-            return $this->responseJson(500, 'Error al guardar los datos', '', $e->getMessage());
+            echo PHP_EOL.'Fail Update Products With FacturaId: ['.$this->data['facturas_id'].']';
+            print_r($e->getMessage());
+            return false;
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             DB::rollBack();
-            return $this->responseJson(404, 'Producto no encontrado');
+            echo PHP_EOL.'Fail Update Products With FacturaId: ['.$this->data['facturas_id'].']';
+            print_r($th->getMessage());
+            return false;
         } catch (\Throwable $th) {
             DB::rollBack();
-            return $this->responseJson(500, 'Error inesperado', '', $th->getMessage());
+            print_r($th->getMessage());
+            echo PHP_EOL.'Fail Update Products With FacturaId: ['.$this->data['facturas_id'].']';
+            return false;
         }
     }
 }
