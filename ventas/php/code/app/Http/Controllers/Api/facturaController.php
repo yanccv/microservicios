@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DetalleFactura;
 use App\Models\Factura;
 use App\Models\Producto;
-use Illuminate\Container\Attributes\Database;
+// use Illuminate\Container\Attributes\Database;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
@@ -55,13 +55,6 @@ class facturaController extends Controller
         if (($validator = $this->validatorData($request->all(), $this->conditionalFactura)) !== true) {
             return $validator;
         }
-        // echo $request->detalle. gettype($request->detalle);
-        // echo '<pre>';
-        // print_r(json_encode($request->detalle));
-        // echo gettype(json_decode($request->detalle));
-        // echo '</pre>';
-
-
         try {
             DB::beginTransaction();
             $factura = new Factura();
@@ -84,9 +77,10 @@ class facturaController extends Controller
                 $producto->existencia -= $productoDetalle['cantidad'];
                 $producto->save();
             }
-
+            $sendInfoQueue['products'] = $request->detalleProducto;
+            $sendInfoQueue['facturas_id'] = $factura->id;
+            Queue::pushOn('facturasQueue', 'facturaAdded', $sendInfoQueue, 'product.deleted');
             DB::commit();
-            Queue::pushOn('facturasQueue', 'facturaAdded', $request->detalleProducto, 'factura.added');
             return $this->responseJson(201, 'Factura Guardada');
         } catch (\illuminate\Database\QueryException $e){
             DB::rollBack();
@@ -96,8 +90,8 @@ class facturaController extends Controller
             return $this->responseJson(404, 'Producto no encontrado');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return $this->responseJson(500, 'Error inesperado', '', $th->getMessage());
+            // print_r($th);
+            return $this->responseJson(500, 'Error inesperado in factura Controller', '', $th->getMessage());
         }
-        // return $this->addData(Producto::class, $request);
     }
 }
