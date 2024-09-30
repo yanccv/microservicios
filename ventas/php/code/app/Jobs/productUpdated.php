@@ -31,14 +31,15 @@ class productUpdated implements ShouldQueue
      */
     public function handle()
     {
-        echo 'Update Product in Micro Ventas';
-        print_r($this->data);
         try {
             $usuario = Producto::findOrFail($this->data['id']);
             $usuario->update($this->data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Registro no encontrado');
+            // return $this->responseJson(404, 'Registro no encontrado');
+            return false;
         } catch (\Throwable $th) {
+            return false;
+            // throw new Exception("Producto no Actualizado", 1);
             throw new Exception("Producto no Actualizado", 1);
         }
     }

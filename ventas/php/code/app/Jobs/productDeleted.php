@@ -31,7 +31,6 @@ class productDeleted implements ShouldQueue
      */
     public function handle()
     {
-        echo 'Event Borrado de Producto en Micro-Ventas'.$this->id;
         $producto = Producto::find($this->id);
         if ($producto) {
             $producto->delete();

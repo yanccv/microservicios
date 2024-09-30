@@ -54,9 +54,6 @@ class productosQueueConsume extends Command
         // Definir la función de callback para manejar los mensajes
         $callback = function ($msg) {
             $data = (object) json_decode($msg->body, true);
-            // echo PHP_EOL.gettype($data->data);
-            print_r($data->data);
-            // var_dump($data->data);
             switch (substr($data->job, strrpos('/', $data->job))) {
                 case 'productAdded':
                     $productAdded = new productAdded($data->data);
@@ -86,6 +83,8 @@ class productosQueueConsume extends Command
             $this->channel->wait();
         }
     }
+
+
 
     public function __destruct()
     {
