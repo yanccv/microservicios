@@ -7,6 +7,7 @@ use App\Models\Producto;
 use App\Models\Unidades;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Queue;
+use Sentry;
 
 class productoController extends Controller
 {
@@ -43,8 +44,12 @@ class productoController extends Controller
             return $this->responseJson(200, '', $producto);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return $this->responseJson(404, 'Producto no encontrado');
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al actualizar el Producto', '', $th->getMessage());
+        } catch (\Exception $th) {
+            Sentry::configureScope(function (Sentry\State\Scope $scope) use ($id) {
+                $scope->setTag('environment', 'micro-products');
+            });
+            Sentry::captureException($th);
+            return $this->responseJson(500, 'Error al buscar el Producto', '', $th->getMessage());
         }
     }
 

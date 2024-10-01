@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
 	&& docker-php-ext-configure pcntl --enable-pcntl \
 	&& docker-php-ext-install -j$(nproc) gd pdo_mysql exif zip pcntl sockets
 
+RUN pecl install excimer
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
