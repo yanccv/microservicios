@@ -5,13 +5,21 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Unidades;
 use Illuminate\Http\Request;
+use App\Interfaces\UnidadesRepositoryInterface;
+// use App\Repositorys\unidadesRepository;
 
 class unidadController extends Controller
 {
-    var $conditional = [
-        'nombre'    => 'required',
-        'siglas'    => 'required'
-    ];
+    private $unidadRepository;
+
+    public function __construct(UnidadesRepositoryInterface $unidadRepository)
+    {
+        $this->unidadRepository = $unidadRepository;
+    }
+
+
+
+
 
     /**
      * listado de productos
@@ -20,7 +28,7 @@ class unidadController extends Controller
      */
     public function list()
     {
-        return $this->allData(Unidades::class);
+        return $this->unidadRepository->all();
     }
 
 
