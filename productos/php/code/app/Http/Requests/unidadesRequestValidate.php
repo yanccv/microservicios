@@ -25,10 +25,19 @@ class unidadesRequestValidate extends FormRequest
      */
     public function rules()
     {
-        return [
-            'nombre'    => 'required',
-            'siglas'    => 'required'
-        ];
+        if ($this->isMethod('post') || $this->isMethod('put')) {
+            return [
+                'nombre'    => 'required',
+                'siglas'    => 'required'
+            ];
+        }
+
+        if ($this->isMethod('patch')) {
+            return [
+                'nombre'    => 'sometimes|required',
+                'siglas'    => 'sometimes|required'
+            ];
+        }
     }
 
     public function messages()

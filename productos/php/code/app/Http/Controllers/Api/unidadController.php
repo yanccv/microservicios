@@ -80,19 +80,21 @@ class unidadController extends Controller
      * @param integer $id identificador del registro a editar
      * @return \Illuminate\Http\JsonResponse responseJson()
      */
-    public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    public function set(unidadesRequestValidate $request, int $id) : \Illuminate\Http\JsonResponse
     {
+        $unidad = Unidades::findOrFail($id);
+        return $this->unidadRepository->update($request, $unidad);
         //return array_intersect_key($request->all(), $this->conditional);
-        $conditional = array_intersect_key($this->conditional, $request->all());
-        if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
-            return $validator;
-        }
-        $updatedRecord =  (object) $this->updateSingle(Unidades::class, $id, $request);
-        if (!isset($updatedRecord->updated)) {
-            return $updatedRecord;
-        } elseif ($updatedRecord->updated) {
-            return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
-        }
+        // $conditional = array_intersect_key($this->conditional, $request->all());
+        // if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
+        //     return $validator;
+        // }
+        // $updatedRecord =  (object) $this->updateSingle(Unidades::class, $id, $request);
+        // if (!isset($updatedRecord->updated)) {
+        //     return $updatedRecord;
+        // } elseif ($updatedRecord->updated) {
+        //     return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
+        // }
     }
 
     /**
