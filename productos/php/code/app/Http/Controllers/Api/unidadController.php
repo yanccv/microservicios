@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\unidadesRequestValidate;
 use App\Models\Unidades;
 use Illuminate\Http\Request;
 use App\Interfaces\UnidadesRepositoryInterface;
@@ -32,6 +33,18 @@ class unidadController extends Controller
     }
 
 
+    /**
+     * Obtener  Unidad - GET
+     *
+     * @param integer $id identificador del registro a editar
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUnidad(int $id) : \Illuminate\Http\JsonResponse
+    {
+        return $this->unidadRepository->find($id);
+
+    }
+
 
     /**
      * Agregar Registro de Unidades
@@ -39,17 +52,10 @@ class unidadController extends Controller
      * @param Request $request Valores a insertar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function add(Request $request) : \Illuminate\Http\JsonResponse
+    public function add(unidadesRequestValidate $request) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
-            return $validator;
-        }
-        $addRecord = (object) $this->addData(Unidades::class, $request);
-        if (!isset($addRecord->created)) {
-            return $addRecord;
-        } elseif ($addRecord->created) {
-            return $this->responseJson(201, 'Registro Agregado', $addRecord->record->toArray());
-        }
+
+        return $this->unidadRepository->new($request);
     }
 
     /**
@@ -59,22 +65,12 @@ class unidadController extends Controller
      * @param integer $id identificador del registro a editar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    public function edit(unidadesRequestValidate $request, int $id) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request, $this->conditional)) !== true) {
-            return $validator;
-        }
-        try {
-            $unidad = Unidades::findOrFail($id);
-            $unidad->update([
-                'nombre' => $request->nombre,
-            ]);
-            return $this->responseJson(200, 'Actualizacion Exitosa', $unidad);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Unidad no encontrada');
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al actualizar la Unidad', '', $th->getMessage());
-        }
+        $unidad = Unidades::findOrFail($id);
+        return $this->unidadRepository->update($request, $unidad);
+
+
     }
 
     /**

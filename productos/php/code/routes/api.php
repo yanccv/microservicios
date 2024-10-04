@@ -39,6 +39,7 @@ Route::delete('/categorias/{id}', [categoriaController::class, 'destroy']);
  * Routas de las Categorias
  */
 Route::get('/unidades', [unidadController::class, 'list']);
+Route::get('/unidades/{id}', [unidadController::class, 'getUnidad']);
 Route::post('/unidades', [unidadController::class, 'add']);
 Route::put('/unidades/{id}', [unidadController::class, 'edit']);
 Route::patch('/unidades/{id}', [unidadController::class, 'set']);

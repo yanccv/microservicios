@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Utilities\JsonResponseCustom;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class unidadesRequestValidate extends FormRequest
 {
@@ -36,4 +38,5 @@ class unidadesRequestValidate extends FormRequest
             'siglas.required' => 'Las siglas son obligatorias.',
         ];
     }
+
 }
