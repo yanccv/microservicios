@@ -3,13 +3,50 @@
 namespace App\Interfaces;
 
 use App\Http\Requests\unidadesRequestValidate;
-use App\Models\Unidades;
+use Illuminate\Http\JsonResponse;
 
 interface UnidadesRepositoryInterface
 {
-    public function find($id);
+    /**
+     * Buscar informacion de la unidad del id pasado
+     *
+     * @param [int] $id
+     * @return JsonResponse
+     */
+    public function find(int $id);
+
+    /**
+     * Borrar unidad
+     *
+     * @param integer $id identificador de la unidad a borrar
+     * @return JsonResponse
+     */
+    public function delete(int $id);
+
+
+    /**
+     * Listado de Unidades
+     *
+     * @return JsonResponse
+     */
     public function all();
+
+
+    /**
+     * Agrega nueva unidad
+     *
+     * @param unidadesRequestValidate $data array con los datos
+     * @return JsonResponse
+     */
     public function new(unidadesRequestValidate $data);
-    public function update(unidadesRequestValidate $data, int $unidad);
+
+    /**
+     * Actualizacion de Registro
+     *
+     * @param unidadesRequestValidate $data array con los datos
+     * @param integer $id identificador de la unidad a actualizar
+     * @return JsonResponse
+     */
+    public function update(unidadesRequestValidate $data, int $id);
 
 }

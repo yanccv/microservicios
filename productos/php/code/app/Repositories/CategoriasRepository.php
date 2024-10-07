@@ -2,31 +2,32 @@
 
 namespace App\Repositories;
 
-use App\Http\Requests\unidadesRequestValidate;
-use App\Interfaces\UnidadesRepositoryInterface;
-use App\Models\Unidades;
+use App\Http\Requests\CategoriasRequestValidate;
+use App\Interfaces\CategoriasBaseInterface;
+use App\Models\Categoria;
 use App\Utilities\JsonResponseCustom;
 use Illuminate\Http\JsonResponse;
 
-class UnidadesRepository implements UnidadesRepositoryInterface
+
+class CategoriasRepository implements CategoriasBaseInterface
 {
     /**
-     * Buscar informacion de la unidad del id pasado
+     * Busca informacion de la categoria
      *
-     * @param [int] $id
+     * @param [int] $id identificador de la categoria
      * @return JsonResponse
      */
-    public function find(int $id) : JsonResponse
+    public function find($id) : JsonResponse
     {
         return JsonResponseCustom::sendJson([
             'status'    => true,
-            'data'      => Unidades::findOrFail($id),
+            'data'      => Categoria::findOrFail($id),
             'httpCode'  => 200
         ]);
     }
 
     /**
-     * Listado de Unidades
+     * Retorna Listado de Categorias
      *
      * @return JsonResponse
      */
@@ -34,67 +35,67 @@ class UnidadesRepository implements UnidadesRepositoryInterface
     {
         return JsonResponseCustom::sendJson([
             'status' => true,
-            'data' => Unidades::all(),
+            'data' => Categoria::all(),
             'httpCode' => JsonResponseCustom::$CODE_SUCCESS
         ]);
     }
 
     /**
-     * Agrega nueva unidad
+     * Agrega Categoria
      *
-     * @param unidadesRequestValidate $data array con los datos
+     * @param CategoriasRequestValidate $data array con los datos de la categoria
      * @return JsonResponse
      */
-    public function new(unidadesRequestValidate $data) : JsonResponse
+    public function new(CategoriasRequestValidate $data) : JsonResponse
     {
-        $unidad = Unidades::create($data->validated());
+        $categoria = Categoria::create($data->validated());
         return JsonResponseCustom::sendJson([
             'status'    => true,
             'mensaje'   => 'Registro agregado',
-            'data'      => $unidad->toArray(),
+            'data'      => $categoria->toArray(),
             'httpCode'  => 200
         ]);
     }
 
     /**
-     * Actualizacion de Registro
+     * Actualizacion Sinple o Full de la categoria
      *
-     * @param unidadesRequestValidate $data array con los datos
-     * @param integer $id identificador de la unidad a actualizar
+     * @param CategoriasRequestValidate $data array con los datos de la categoria
+     * @param integer $id identificador de la categoria
      * @return JsonResponse
      */
-    public function update(unidadesRequestValidate $data, int $id) : JsonResponse
+    public function update(CategoriasRequestValidate $data, int $id) : JsonResponse
     {
         $data->validated();
-        $unidad = Unidades::findOrFail($id);
-        $unidad->fill($data->toArray());
-        if (!$unidad->isDirty()) {
+        $categoria = Categoria::findOrFail($id);
+        $categoria->fill($data->toArray());
+        if (!$categoria->isDirty()) {
             return JsonResponseCustom::sendJson([
                 'status' => true,
                 'mensaje' => 'Sin Cambios a Actualizar',
-                'data' => $unidad->toArray(),
+                'data' => $categoria,
                 'httpCode' => JsonResponseCustom::$CODE_SUCCESS
             ]);
         }
-        $unidad->save();
+        $categoria->save();
         return JsonResponseCustom::sendJson([
             'status' => true,
             'mensaje' => 'Registro actualizado',
-            'data' => $unidad->toArray(),
+            'data' => $categoria,
             'httpCode' => JsonResponseCustom::$CODE_SUCCESS
         ]);
     }
 
     /**
-     * Borrar unidad
+     * Borrar Categoria
      *
-     * @param integer $id identificador de la unidad a borrar
+     * @param integer $id identificador de la categoria
      * @return JsonResponse
      */
     public function delete(int $id) : JsonResponse
     {
-        $unidad = Unidades::findOrFail($id);
-        $unidad->delete();
+        $categoria = Categoria::findOrFail($id);
+        $categoria->delete();
         return JsonResponseCustom::sendJson([
             'status' => true,
             'mensaje' => 'Registro eliminado',
