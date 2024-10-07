@@ -10,6 +10,6 @@ interface UnidadesRepositoryInterface
     public function find($id);
     public function all();
     public function new(unidadesRequestValidate $data);
-    public function update(unidadesRequestValidate $data, Unidades $unidad);
+    public function update(unidadesRequestValidate $data, int $unidad);
 
 }

@@ -7,6 +7,8 @@ use App\Http\Requests\unidadesRequestValidate;
 use App\Models\Unidades;
 use Illuminate\Http\Request;
 use App\Interfaces\UnidadesRepositoryInterface;
+use App\Utilities\JsonResponseCustom;
+
 // use App\Repositorys\unidadesRepository;
 
 class unidadController extends Controller
@@ -23,11 +25,10 @@ class unidadController extends Controller
 
 
     /**
-     * listado de productos
-     *
-     * @return Listado Completo de Unidades
+     *  Listado Completo de Unidades
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function list()
+    public function list() : \Illuminate\Http\JsonResponse
     {
         return $this->unidadRepository->all();
     }
@@ -54,7 +55,6 @@ class unidadController extends Controller
      */
     public function add(unidadesRequestValidate $request) : \Illuminate\Http\JsonResponse
     {
-
         return $this->unidadRepository->new($request);
     }
 
@@ -67,10 +67,7 @@ class unidadController extends Controller
      */
     public function edit(unidadesRequestValidate $request, int $id) : \Illuminate\Http\JsonResponse
     {
-        $unidad = Unidades::findOrFail($id);
-        return $this->unidadRepository->update($request, $unidad);
-
-
+        return $this->unidadRepository->update($request, $id);
     }
 
     /**
@@ -78,12 +75,12 @@ class unidadController extends Controller
      *
      * @param Request $request Valores a actualizar
      * @param integer $id identificador del registro a editar
-     * @return \Illuminate\Http\JsonResponse responseJson()
+     * @return \Illuminate\Http\JsonResponse
      */
     public function set(unidadesRequestValidate $request, int $id) : \Illuminate\Http\JsonResponse
     {
-        $unidad = Unidades::findOrFail($id);
-        return $this->unidadRepository->update($request, $unidad);
+        // $unidad = Unidades::findOrFail($id);
+        return $this->unidadRepository->update($request, $id);
         //return array_intersect_key($request->all(), $this->conditional);
         // $conditional = array_intersect_key($this->conditional, $request->all());
         // if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
@@ -105,12 +102,13 @@ class unidadController extends Controller
      */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
+        return $this->unidadRepository->delete($id);
         // return $this->destroyGeneral(Unidades::class, $id);
-        $deletedRecord = (Object) $this->destroyGeneral(Unidades::class, $id);
-        if (!isset($deletedRecord->deleted)) {
-            return $deletedRecord;
-        } elseif ($deletedRecord->deleted) {
-            return $this->responseJson(200, 'Registro eliminado');
-        }
+        // $deletedRecord = (Object) $this->destroyGeneral(Unidades::class, $id);
+        // if (!isset($deletedRecord->deleted)) {
+        //     return $deletedRecord;
+        // } elseif ($deletedRecord->deleted) {
+        //     return $this->responseJson(200, 'Registro eliminado');
+        // }
     }
 }

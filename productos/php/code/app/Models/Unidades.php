@@ -12,10 +12,19 @@ class Unidades extends Model
     protected $table = 'unidades';
     protected $primaryKey = 'id';
     protected $fillable = ['nombre', 'siglas', 'estatus'];
+    protected $guarded = [];
+    // protected $casts = [
+    //     'estatus' => 'string',
+    // ];
 
-    protected $attributes = [
-        'estatus' => 'Activo',
-    ];
+    protected $attributes = [];
+
+    public function setEstatusAttribute($value)
+    {
+        $this->attributes['estatus'] = trim($value);
+    }
+
+
 
     public function productos()
     {
@@ -25,4 +34,6 @@ class Unidades extends Model
             'id',
         );
     }
+
+
 }

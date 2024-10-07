@@ -28,14 +28,16 @@ class unidadesRequestValidate extends FormRequest
         if ($this->isMethod('post') || $this->isMethod('put')) {
             return [
                 'nombre'    => 'required',
-                'siglas'    => 'required'
+                'siglas'    => 'required',
+                // 'estatus'   => 'required'
             ];
         }
 
         if ($this->isMethod('patch')) {
             return [
                 'nombre'    => 'sometimes|required',
-                'siglas'    => 'sometimes|required'
+                'siglas'    => 'sometimes|required',
+                // 'estatus'   => 'sometimes|required'
             ];
         }
     }

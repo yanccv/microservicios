@@ -6,50 +6,50 @@ use App\Http\Requests\unidadesRequestValidate;
 use App\Interfaces\UnidadesRepositoryInterface;
 use App\Models\Unidades;
 use App\Utilities\JsonResponseCustom;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class UnidadesRepository implements UnidadesRepositoryInterface
 {
-    private $unidad;
-
-
-    public function __construct(Unidades $unidad)
-    {
-        $this->unidad = $unidad;
-    }
-
-    public function find($id)
+    public function find($id) : JsonResponse
     {
         return JsonResponseCustom::sendJson([
             'status'    => true,
-            'data'      => $this->unidad->findOrFail($id),
+            'data'      => Unidades::findOrFail($id),
             'httpCode'  => 200
         ]);
     }
 
-    public function all()
+    public function all() : JsonResponse
     {
         return JsonResponseCustom::sendJson([
             'status' => true,
-            'data' => $this->unidad->all(),
+            'data' => Unidades::all(),
             'httpCode' => JsonResponseCustom::$CODE_SUCCESS
         ]);
     }
 
-    public function new(unidadesRequestValidate $data)
+    public function new(unidadesRequestValidate $data) : JsonResponse
     {
-        return $this->unidad->create($data->validated());
+        $unidad = Unidades::create($data->validated());
+        return JsonResponseCustom::sendJson([
+            'status'    => true,
+            'mensaje'   => 'Registro agregado',
+            'data'      => $unidad->toArray(),
+            'httpCode'  => 200
+        ]);
     }
 
-    public function update(unidadesRequestValidate $data, Unidades $unidad)
+
+    public function update(unidadesRequestValidate $data, int $id) : JsonResponse
     {
-        print_r($data->validated());
-        $unidad->fill($data->validated());
+        $data->validated();
+        $unidad = Unidades::findOrFail($id);
+        $unidad->fill($data->toArray());
         if (!$unidad->isDirty()) {
             return JsonResponseCustom::sendJson([
                 'status' => true,
                 'mensaje' => 'Sin Cambios a Actualizar',
-                'data' => $unidad,
+                'data' => $unidad->toArray(),
                 'httpCode' => JsonResponseCustom::$CODE_SUCCESS
             ]);
         }
@@ -57,8 +57,19 @@ class UnidadesRepository implements UnidadesRepositoryInterface
         return JsonResponseCustom::sendJson([
             'status' => true,
             'mensaje' => 'Registro actualizado',
-            'data' => $unidad,
+            'data' => $unidad->toArray(),
             'httpCode' => JsonResponseCustom::$CODE_SUCCESS
+        ]);
+    }
+
+    public function delete(int $id) : JsonResponse
+    {
+        $unidad = Unidades::findOrFail($id);
+        $unidad->delete();
+        return JsonResponseCustom::sendJson([
+            'status' => true,
+            'mensaje' => 'Registro eliminado',
+            'httpCode' => 200
         ]);
     }
 }
