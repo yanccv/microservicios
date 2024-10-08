@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Interfaces\CategoriasBaseInterface;
+use App\Interfaces\ProductosInterface;
 use App\Interfaces\UnidadesRepositoryInterface;
 use App\Repositories\UnidadesRepository;
 use App\Repositories\CategoriasRepository;
+use App\Repositories\ProductosRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             CategoriasBaseInterface::class,
             CategoriasRepository::class
+        );
+
+        $this->app->bind(
+            ProductosInterface::class,
+            ProductosRepository::class
         );
     }
 
