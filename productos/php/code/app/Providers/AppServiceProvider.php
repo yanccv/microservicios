@@ -4,10 +4,12 @@ namespace App\Providers;
 
 use App\Interfaces\CategoriasBaseInterface;
 use App\Interfaces\ProductosInterface;
+use App\Interfaces\SendMessageInterface;
 use App\Interfaces\UnidadesRepositoryInterface;
 use App\Repositories\UnidadesRepository;
 use App\Repositories\CategoriasRepository;
 use App\Repositories\ProductosRepository;
+use App\Repositories\SendMessagesQueue;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +34,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ProductosInterface::class,
             ProductosRepository::class
+        );
+
+        $this->app->bind(
+            SendMessageInterface::class,
+            SendMessagesQueue::class
         );
     }
 

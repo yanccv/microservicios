@@ -23,25 +23,21 @@ class ProductosRequestValidate extends FormRequest
      */
     public function rules()
     {
-        return [
-
-        ];
-
         if ($this->isMethod('post') || $this->isMethod('put')) {
             return [
-                'producto'      => 'required',
-                'precio'        => 'nullable|numeric',
-                'categorias_id'   => 'required',
-                'unidades_id'   => 'required'
+                'producto'          => 'required',
+                'precio'            => 'nullable|numeric',
+                'categorias_id'     => 'required',
+                'unidades_id'       => 'required'
             ];
         }
 
         if ($this->isMethod('patch')) {
             return [
-                'producto'      => 'sometimes|required',
-                'precio'        => 'sometimes|nullable|numeric',
-                'categorias_id'   => 'sometimes|required',
-                'unidades_id'   => 'sometimes|required'
+                'producto'          => 'sometimes|required',
+                'precio'            => 'sometimes|nullable|numeric',
+                'categorias_id'     => 'sometimes|required',
+                'unidades_id'       => 'sometimes|required'
             ];
         }
     }

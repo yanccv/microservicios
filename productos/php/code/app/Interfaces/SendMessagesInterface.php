@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Interfaces;
 
 interface SendMessageInterface
@@ -9,5 +10,5 @@ interface SendMessageInterface
      * @param array $message
      * @return void
      */
-    public function sendMessage(array $message, string $job, string $routingKey): void;
+    public function sendMessage(array | int | string $message, string $job, string $routingKey): void;
 }

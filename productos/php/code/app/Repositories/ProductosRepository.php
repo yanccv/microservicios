@@ -4,12 +4,24 @@ namespace App\Repositories;
 
 use App\Http\Requests\ProductosRequestValidate;
 use App\Interfaces\ProductosInterface;
+use App\Interfaces\SendMessageInterface;
 use App\Models\Producto;
 use App\Utilities\JsonResponseCustom;
 use Illuminate\Http\JsonResponse;
 
 class ProductosRepository implements ProductosInterface
 {
+    protected $jsonResponse;
+    protected $sendMessageQueue;
+    public function __construct(
+        JsonResponseCustom $jsonResponse,
+        SendMessageInterface $sendMessageQueue
+    )
+    {
+        $this->jsonResponse = $jsonResponse;
+        $this->sendMessageQueue = $sendMessageQueue;
+    }
+
     /**
      * Buscar informacion del prodicto del $id pasado
      *
@@ -18,10 +30,10 @@ class ProductosRepository implements ProductosInterface
      */
     public function find(int $id) : JsonResponse
     {
-        return JsonResponseCustom::sendJson([
+        return $this->jsonResponse::sendJson([
             'status'    => true,
             'data'      => Producto::findOrFail($id),
-            'httpCode'  => 200
+            'httpCode'  => $this->jsonResponse::$CODE_SUCCESS
         ]);
     }
 
@@ -32,10 +44,10 @@ class ProductosRepository implements ProductosInterface
      */
     public function all() : JsonResponse
     {
-        return JsonResponseCustom::sendJson([
+        return $this->jsonResponse::sendJson([
             'status' => true,
             'data' => Producto::all(),
-            'httpCode' => JsonResponseCustom::$CODE_SUCCESS
+            'httpCode' => $this->jsonResponse::$CODE_SUCCESS
         ]);
     }
 
@@ -47,12 +59,15 @@ class ProductosRepository implements ProductosInterface
      */
     public function new(ProductosRequestValidate $data) : JsonResponse
     {
+        // dd($data->validated());
         $producto = Producto::create($data->validated());
-        return JsonResponseCustom::sendJson([
+        $this->sendMessageQueue->sendMessage($producto->toArray(), 'productAdded', 'product.added');
+        // Queue::pushOn('productosQueue', 'productAdded', $addRecord->record->toArray(), 'product.added');
+        return $this->jsonResponse::sendJson([
             'status'    => true,
             'mensaje'   => 'Registro agregado',
             'data'      => $producto->toArray(),
-            'httpCode'  => JsonResponseCustom::$CODE_SUCCESS
+            'httpCode'  => $this->jsonResponse::$CODE_SUCCESS
         ]);
     }
 
@@ -66,22 +81,23 @@ class ProductosRepository implements ProductosInterface
     public function update(ProductosRequestValidate $data, int $id) : JsonResponse
     {
         $data->validated();
-        $unidad = Producto::findOrFail($id);
-        $unidad->fill($data->toArray());
-        if (!$unidad->isDirty()) {
-            return JsonResponseCustom::sendJson([
+        $producto = Producto::findOrFail($id);
+        $producto->fill($data->toArray());
+        if (!$producto->isDirty()) {
+            return $this->jsonResponse::sendJson([
                 'status' => true,
                 'mensaje' => 'Sin Cambios a Actualizar',
-                'data' => $unidad->toArray(),
-                'httpCode' => JsonResponseCustom::$CODE_SUCCESS
+                'data' => $producto->toArray(),
+                'httpCode' => $this->jsonResponse::$CODE_SUCCESS
             ]);
         }
-        $unidad->save();
-        return JsonResponseCustom::sendJson([
+        $producto->save();
+        $this->sendMessageQueue->sendMessage($producto->toArray(), 'productUpdated', 'product.updated');
+        return $this->jsonResponse::sendJson([
             'status' => true,
             'mensaje' => 'Registro actualizado',
-            'data' => $unidad->toArray(),
-            'httpCode' => JsonResponseCustom::$CODE_SUCCESS
+            'data' => $producto->toArray(),
+            'httpCode' => $this->jsonResponse::$CODE_SUCCESS
         ]);
     }
 
@@ -93,12 +109,13 @@ class ProductosRepository implements ProductosInterface
      */
     public function delete(int $id) : JsonResponse
     {
-        $unidad = Producto::findOrFail($id);
-        $unidad->delete();
-        return JsonResponseCustom::sendJson([
+        $producto = Producto::findOrFail($id);
+        $producto->delete();
+        $this->sendMessageQueue->sendMessage($id, 'productDeleted', 'product.deleted');
+        return $this->jsonResponse::sendJson([
             'status' => true,
             'mensaje' => 'Registro eliminado',
-            'httpCode' => 200
+            'httpCode' => $this->jsonResponse::$CODE_SUCCESS
         ]);
     }
 }

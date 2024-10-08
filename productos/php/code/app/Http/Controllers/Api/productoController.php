@@ -138,7 +138,7 @@ class productoController extends Controller
      */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
-        return $this->unidadRepository->delete($id);
+        return $this->productosRepository->delete($id);
         // $deletedRecord = (Object) $this->destroyGeneral(Producto::class, $id);
         // if (!isset($deletedRecord->deleted)) {
         //     return $deletedRecord;
