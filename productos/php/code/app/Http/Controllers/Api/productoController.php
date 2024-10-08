@@ -3,23 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Producto;
-use App\Models\Unidades;
+use App\Http\Requests\ProductosRequestValidate;
+use App\Interfaces\ProductosInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Queue;
-use Sentry;
+// use Illuminate\Support\Facades\Queue;
+// use \Illuminate\Http\JsonResponse;
+// use Sentry;
 
 class productoController extends Controller
 {
-    /**
-     * Validacion de los campos del modelo Producto
-     */
-    var $conditional = [
-        'producto'      => 'required',
-        'precio'        => 'nullable|numeric',
-        'categorias_id'   => 'required'
-    ];
+    private $productosRepository;
 
+    public function __construct(ProductosInterface $productosRepository)
+    {
+        $this->productosRepository = $productosRepository;
+    }
 
     /**
      * Retorna Todos los Registros - GET
@@ -28,7 +26,8 @@ class productoController extends Controller
      */
     public function list() : \Illuminate\Http\JsonResponse
     {
-        return $this->allData(Producto::class);
+        // return $this->allData(Producto::class);
+        return $this->productosRepository->all();
     }
 
     /**
@@ -37,94 +36,97 @@ class productoController extends Controller
      * @param integer $id identificador del registro
      * @return \Illuminate\Http\JsonResponse
      */
-    public function get(int $id) : \Illuminate\Http\JsonResponse
+    public function getProducto(int $id) : \Illuminate\Http\JsonResponse
     {
-        try {
-            $producto = Producto::findOrFail($id);
-            return $this->responseJson(200, '', $producto);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Producto no encontrado');
-        } catch (\Exception $th) {
-            Sentry::configureScope(function (Sentry\State\Scope $scope) use ($id) {
-                $scope->setTag('environment', 'micro-products');
-            });
-            Sentry::captureException($th);
-            return $this->responseJson(500, 'Error al buscar el Producto', '', $th->getMessage());
-        }
+        return $this->productosRepository->find($id);
+        // try {
+        //     $producto = Producto::findOrFail($id);
+        //     return $this->responseJson(200, '', $producto);
+        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+        //     return $this->responseJson(404, 'Producto no encontrado');
+        // } catch (\Exception $th) {
+        //     Sentry::configureScope(function (Sentry\State\Scope $scope) use ($id) {
+        //         $scope->setTag('environment', 'micro-products');
+        //     });
+        //     Sentry::captureException($th);
+        //     return $this->responseJson(500, 'Error al buscar el Producto', '', $th->getMessage());
+        // }
     }
 
     /**
      * Agregar Registro de Productos - POST
      *
-     * @param Request $request Valores a insertar
+     * @param ProductosRequestValidate $request Valores a insertar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function add(Request $request) : \Illuminate\Http\JsonResponse
+    public function add(ProductosRequestValidate $request) : \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
-            return $validator;
-        }
-        $addRecord = (object) $this->addData(Producto::class, $request);
-        if (!isset($addRecord->created)) {
-            return $addRecord;
-        } elseif ($addRecord->created) {
-            Queue::pushOn('productosQueue', 'productAdded', $addRecord->record->toArray(), 'product.added');
-            return $this->responseJson(201, 'Registro Agregado Categoria:', $addRecord->record->toArray());
-        }
+        return $this->productosRepository->new($request);
+        // if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
+        //     return $validator;
+        // }
+        // $addRecord = (object) $this->addData(Producto::class, $request);
+        // if (!isset($addRecord->created)) {
+        //     return $addRecord;
+        // } elseif ($addRecord->created) {
+        //     Queue::pushOn('productosQueue', 'productAdded', $addRecord->record->toArray(), 'product.added');
+        //     return $this->responseJson(201, 'Registro Agregado Categoria:', $addRecord->record->toArray());
+        // }
     }
 
     /**
      * Modificacion Completa - PUT
      *
-     * @param Request $request Valores actualizables
+     * @param ProductosRequestValidate $request Valores actualizables
      * @param integer $id identificador del registro a editar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(Request $request, int $id) //: \Illuminate\Http\JsonResponse
+    public function edit(ProductosRequestValidate $request, int $id) //: \Illuminate\Http\JsonResponse
     {
-        if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
-            return $validator;
-        }
-        try {
-            $producto = Producto::findOrFail($id);
-            $producto->update([
-                'producto' => $request->producto,
-                'precio' => $request->precio,
-                'idcategoria' => $request->idcategoria,
-            ]);
-            Queue::pushOn('productosQueue', 'productUpdated', $producto->toArray(), 'product.updated');
-            return $this->responseJson(200, 'Actualizacion Exitosa', $producto);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return $this->responseJson(404, 'Producto no encontrado');
-        } catch (\Throwable $th) {
-            return $this->responseJson(500, 'Error al actualizar el Producto', '', $th->getMessage());
-        }
+        return $this->productosRepository->update($request, $id);
+        // if (($validator = $this->validatorData($request->all(), $this->conditional)) !== true) {
+        //     return $validator;
+        // }
+        // try {
+        //     $producto = Producto::findOrFail($id);
+        //     $producto->update([
+        //         'producto' => $request->producto,
+        //         'precio' => $request->precio,
+        //         'idcategoria' => $request->idcategoria,
+        //     ]);
+        //     Queue::pushOn('productosQueue', 'productUpdated', $producto->toArray(), 'product.updated');
+        //     return $this->responseJson(200, 'Actualizacion Exitosa', $producto);
+        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+        //     return $this->responseJson(404, 'Producto no encontrado');
+        // } catch (\Throwable $th) {
+        //     return $this->responseJson(500, 'Error al actualizar el Producto', '', $th->getMessage());
+        // }
     }
 
 
     /**
      * Modificacion Simple - PATCH
      *
-     * @param Request $request Valores a actualizar
+     * @param ProductosRequestValidate $request Valores a actualizar
      * @param integer $id identificador del registro a editar
      * @return \Illuminate\Http\JsonResponse responseJson()
      */
-    public function set(Request $request, int $id) : \Illuminate\Http\JsonResponse
+    public function set(ProductosRequestValidate $request, int $id) : \Illuminate\Http\JsonResponse
     {
-        $conditional = array_intersect_key($this->conditional, $request->all());
-        if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
-            return $validator;
-        }
+        return $this->productosRepository->update($request, $id);
+        // $conditional = array_intersect_key($this->conditional, $request->all());
+        // if (($validator = $this->validatorData($request->all(), $conditional)) !== true) {
+        //     return $validator;
+        // }
 
-        $updatedRecord =  (object) $this->updateSingle(Producto::class, $id, $request);
-        if (!isset($updatedRecord->updated)) {
-            return $updatedRecord;
-        } elseif ($updatedRecord->updated) {
-            // userUpdated::dispatch($updatedRecord->record);
-            Queue::pushOn('productosQueue', 'productUpdated', $updatedRecord->record, 'product.updated');
-            return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
-        }
-        // return $this->updateSingle(Producto::class, $id, $request);
+        // $updatedRecord =  (object) $this->updateSingle(Producto::class, $id, $request);
+        // if (!isset($updatedRecord->updated)) {
+        //     return $updatedRecord;
+        // } elseif ($updatedRecord->updated) {
+        //     // userUpdated::dispatch($updatedRecord->record);
+        //     Queue::pushOn('productosQueue', 'productUpdated', $updatedRecord->record, 'product.updated');
+        //     return $this->responseJson(200, 'Registro Actualizado', $updatedRecord->record);
+        // }
     }
 
 
@@ -136,13 +138,13 @@ class productoController extends Controller
      */
     public function destroy(int $id) : \Illuminate\Http\JsonResponse
     {
-        $deletedRecord = (Object) $this->destroyGeneral(Producto::class, $id);
-        if (!isset($deletedRecord->deleted)) {
-            return $deletedRecord;
-        } elseif ($deletedRecord->deleted) {
-            Queue::pushOn('productosQueue', 'productDeleted', ['id' => $id], 'product.deleted');
-            return $this->responseJson(200, 'Registro eliminado');
-        }
-        // return $this->destroyGeneral(Producto::class, $id);
+        return $this->unidadRepository->delete($id);
+        // $deletedRecord = (Object) $this->destroyGeneral(Producto::class, $id);
+        // if (!isset($deletedRecord->deleted)) {
+        //     return $deletedRecord;
+        // } elseif ($deletedRecord->deleted) {
+        //     Queue::pushOn('productosQueue', 'productDeleted', ['id' => $id], 'product.deleted');
+        //     return $this->responseJson(200, 'Registro eliminado');
+        // }
     }
 }
