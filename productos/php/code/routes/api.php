@@ -21,7 +21,7 @@ use App\Http\Controllers\Api\unidadController;
  * Rutas de los productos
  */
 Route::get('/productos', [productoController::class, 'list']);
-Route::get('/productos/{id}', [productoController::class, 'get']);
+Route::get('/productos/{id}', [productoController::class, 'getProducto']);
 Route::post('/productos', [productoController::class, 'add']);
 Route::put('/productos/{id}', [productoController::class, 'edit']);
 Route::patch('/productos/{id}', [productoController::class, 'set']);
@@ -31,7 +31,7 @@ Route::delete('/productos/{id}', [productoController::class, 'destroy']);
  * Routas de las Categorias
  */
 Route::get('/categorias', [categoriaController::class, 'list']);
-Route::get('/categorias/{id}', [categoriaController::class, 'getUnidad']);
+Route::get('/categorias/{id}', [categoriaController::class, 'getCategoria']);
 Route::post('/categorias', [categoriaController::class, 'add']);
 Route::put('/categorias/{id}', [categoriaController::class, 'edit']);
 Route::patch('/categorias/{id}', [categoriaController::class, 'set']);

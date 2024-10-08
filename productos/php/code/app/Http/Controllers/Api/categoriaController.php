@@ -34,7 +34,7 @@ class categoriaController extends Controller
      * @param integer $id identificador del registro a editar
      * @return JsonResponse
      */
-    public function getUnidad(int $id) : JsonResponse
+    public function getCategoria(int $id) : JsonResponse
     {
         return $this->categoriaRepository->find($id);
 
