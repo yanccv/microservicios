@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/usuarios', [usuarioController::class, 'index']);
+Route::get('/usuarios', [usuarioController::class, 'list']);
 
-Route::get('/usuarios/{id}', [usuarioController::class, 'get'])->where('id', '[0-9]+');
+Route::get('/usuarios/{id}', [usuarioController::class, 'getUsuario'])->where('id', '[0-9]+');
 
 Route::post('/usuarios', [usuarioController::class, 'add']);
 

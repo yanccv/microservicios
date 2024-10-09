@@ -2,7 +2,12 @@
 
 namespace App\Exceptions;
 
+use App\Utilities\JsonResponseCustom;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
+use PDOException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -36,6 +41,7 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+
     /**
      * Register the exception handling callbacks for the application.
      *
@@ -43,8 +49,56 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        // $this->reportable(function (Throwable $e) {
+        //     Integration::captureUnhandledException($e);
+        // });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof ModelNotFoundException) {
+            return JsonResponseCustom::sendJson([
+                'status' => false,
+                'mensaje' => 'Registro no encontrado',
+                'httpCode' => JsonResponseCustom::$CODE_NOT_FOUND
+            ]);
+        }
+
+        if ($exception instanceof ValidationException) {
+            return JsonResponseCustom::sendJson([
+                'status' => false,
+                'mensaje' => 'Fallo la validacion de la información',
+                'error' => $exception->errors(),
+                'httpCode' => JsonResponseCustom::$CODE_FAILED_VALIDATION
+            ]);
+        }
+
+        if ($exception instanceof QueryException) {
+            if (is_array($exception->getPrevious()->errorInfo)) {
+                $message = array_pop($exception->getPrevious()->errorInfo);
+                $code = array_pop($exception->getPrevious()->errorInfo);
+            } else {
+                $code = $exception->getCode();
+            }
+            return JsonResponseCustom::sendJson([
+                'status' => false,
+                'mensaje' => 'Error: ['.$code.'] '.$message,
+                'httpCode' => JsonResponseCustom::$CODE_EXCEPTION
+            ]);
+        }
+
+        if ($exception instanceof PDOException) {
+            return JsonResponseCustom::sendJson([
+                'status' => false,
+                'mensaje' => 'PDOException: ['.$exception->getCode().']Sql:'.$exception->getSql().', '.', Error:['.']'.$exception->getMessage(). ', File:'.$exception->getFile() . ', Line: '.$exception->getLine(),
+                'httpCode' => JsonResponseCustom::$CODE_EXCEPTION
+            ]);
+        }
+
+        return JsonResponseCustom::sendJson([
+            'status' => false,
+            'mensaje' => 'XError:['.']'.$exception->getMessage(). ', File:'.$exception->getFile() . ', Line: '.$exception->getLine(),
+            'httpCode' => JsonResponseCustom::$CODE_EXCEPTION
+        ]);
     }
 }
