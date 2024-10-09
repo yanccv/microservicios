@@ -2,21 +2,29 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\SendMessageInterface;
+use App\Interfaces\SendMessagesInterface;
+use Illuminate\Support\Facades\Queue;
 
-class SendMessagesQueue implements SendMessageInterface
+class SendMessagesQueue implements SendMessagesInterface
 {
     protected $queue;
 
     public function __construct()
     {
-        // Configura la cola de productos
         $this->queue = 'productosQueue';
     }
 
+
+    /**
+     * Envia mensajes a la cola definida
+     * @param mixed array $message a enviar a la cola
+     * @param string $job nombre del job a ejecutar en donde se procese la cola
+     * @param string $routingKey de la cola
+     *
+     * @return void
+     */
     public function sendMessage(array | int | string $message, string $job, string $routingKey): void
     {
-        // \Amqp::publish($this->queue, json_encode($message)); // RabbitMQ ejemplo
         Queue::pushOn('productosQueue', $job, $message, $routingKey);
     }
 }

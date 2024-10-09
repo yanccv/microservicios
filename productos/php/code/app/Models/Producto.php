@@ -23,6 +23,8 @@ class Producto extends Model
         'existencia'    => 0
     ];
 
+
+    // Definicion de las claves Foraneas
     public function categoria()
     {
         return $this->belongsTo(

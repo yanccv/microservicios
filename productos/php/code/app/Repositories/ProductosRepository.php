@@ -4,18 +4,19 @@ namespace App\Repositories;
 
 use App\Http\Requests\ProductosRequestValidate;
 use App\Interfaces\ProductosInterface;
-use App\Interfaces\SendMessageInterface;
+use App\Interfaces\SendMessagesInterface;
 use App\Models\Producto;
 use App\Utilities\JsonResponseCustom;
 use Illuminate\Http\JsonResponse;
 
 class ProductosRepository implements ProductosInterface
 {
-    protected $jsonResponse;
-    protected $sendMessageQueue;
+    private $jsonResponse;
+    private $sendMessageQueue;
+
     public function __construct(
         JsonResponseCustom $jsonResponse,
-        SendMessageInterface $sendMessageQueue
+        SendMessagesInterface $sendMessageQueue
     )
     {
         $this->jsonResponse = $jsonResponse;
@@ -62,7 +63,6 @@ class ProductosRepository implements ProductosInterface
         // dd($data->validated());
         $producto = Producto::create($data->validated());
         $this->sendMessageQueue->sendMessage($producto->toArray(), 'productAdded', 'product.added');
-        // Queue::pushOn('productosQueue', 'productAdded', $addRecord->record->toArray(), 'product.added');
         return $this->jsonResponse::sendJson([
             'status'    => true,
             'mensaje'   => 'Registro agregado',

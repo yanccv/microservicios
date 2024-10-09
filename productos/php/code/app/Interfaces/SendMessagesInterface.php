@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-interface SendMessageInterface
+interface SendMessagesInterface
 {
     /**
      * Envía un mensaje a la cola.
