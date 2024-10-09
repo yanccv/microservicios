@@ -24,9 +24,9 @@ class ProductosRepository implements ProductosInterface
     }
 
     /**
-     * Buscar informacion del prodicto del $id pasado
+     * Obtiene informacion del producto con id = $id
      *
-     * @param [int] $id
+     * @param [int] $id identificador del registro
      * @return JsonResponse
      */
     public function find(int $id) : JsonResponse
@@ -53,9 +53,9 @@ class ProductosRepository implements ProductosInterface
     }
 
     /**
-     * Agrega nueva unidad
+     * Agrega nuevo producto
      *
-     * @param ProductosRequestValidate $data array con los datos
+     * @param ProductosRequestValidate $data array datos del registro a agregar
      * @return JsonResponse
      */
     public function new(ProductosRequestValidate $data) : JsonResponse
@@ -75,7 +75,7 @@ class ProductosRepository implements ProductosInterface
      * Actualizacion de Registro
      *
      * @param ProductosRequestValidate $data array con los datos
-     * @param integer $id identificador de la unidad a actualizar
+     * @param integer $id identificador del registro a actualizar
      * @return JsonResponse
      */
     public function update(ProductosRequestValidate $data, int $id) : JsonResponse
@@ -102,9 +102,9 @@ class ProductosRepository implements ProductosInterface
     }
 
     /**
-     * Borrar unidad
+     * Borrar Producto
      *
-     * @param integer $id identificador de la unidad a borrar
+     * @param integer $id identificador del registro a borrar
      * @return JsonResponse
      */
     public function delete(int $id) : JsonResponse
