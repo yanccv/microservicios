@@ -21,25 +21,25 @@ use App\Http\Controllers\Api\usuarioController;
  * Rutas de los productos
  */
 // Route::get('/productos', [productoController::class, 'list']);
-Route::get('/productos/{id}', [productoController::class, 'get']);
-Route::post('/productos', [productoController::class, 'add']);
-Route::patch('/productos/{id}', [productoController::class, 'edit']);
-Route::delete('/productos/{id}', [productoController::class, 'destroy']);
+// Route::get('/productos/{id}', [productoController::class, 'get']);
+// Route::post('/productos', [productoController::class, 'add']);
+// Route::patch('/productos/{id}', [productoController::class, 'edit']);
+// Route::delete('/productos/{id}', [productoController::class, 'destroy']);
 
 
 /**
  * Rutas de los usuarios
  */
-Route::get('/usuarios/{id}', [usuarioController::class, 'get']);
-Route::post('/usuarios', [usuarioController::class, 'add']);
-Route::patch('/usuarios/{id}', [usuarioController::class, 'edit']);
-Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
+// Route::get('/usuarios/{id}', [usuarioController::class, 'get']);
+// Route::post('/usuarios', [usuarioController::class, 'add']);
+// Route::patch('/usuarios/{id}', [usuarioController::class, 'edit']);
+// Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
 
 
 /**
  * Rutas de las facturas
  */
-Route::get('/facturas/{id}', [facturaController::class, 'get']);
+Route::get('/facturas/{id}', [facturaController::class, 'getFactura']);
 Route::post('/facturas', [facturaController::class, 'add']);
 // Route::patch('/facturas/{id}', [facturaController::class, 'edit']);
 Route::delete('/facturas/{id}', [facturaController::class, 'destroy']);
