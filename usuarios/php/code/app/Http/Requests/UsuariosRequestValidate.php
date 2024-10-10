@@ -36,26 +36,15 @@ class UsuariosRequestValidate extends FormRequest
             ];
         }
 
-
-        // return [
-        //     'email' => 'required|email|unique:users,email,' . $userId,
-        // ];
-
         if ($this->isMethod('patch')) {
             return [
                 'nombre'   => 'sometimes|required',
                 'apellido' => 'sometimes|required',
                 'email'    => 'sometimes|required|email|unique:usuarios,email'.$userId,
-                // 'email'    => 'sometimes|required|email|unique_email:',
                 'clave'    => 'sometimes|required',
                 'type'     => 'sometimes|required'
             ];
         }
 
-        // Validator::extend('unique_email', function ($attribute, $value, $parameters, $validator) {
-        //     return Usuario::where('email', $value)
-        //     ->where('id', '!=', $parameters[0])
-        //     ->doesntExist();
-        // });
     }
 }
