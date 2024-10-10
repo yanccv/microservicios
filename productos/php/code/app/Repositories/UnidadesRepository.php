@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Http\Requests\unidadesRequestValidate;
+use App\Http\Requests\UnidadesRequestValidate;
 use App\Interfaces\UnidadesRepositoryInterface;
 use App\Models\Unidades;
 use App\Utilities\JsonResponseCustom;
@@ -42,10 +42,10 @@ class UnidadesRepository implements UnidadesRepositoryInterface
     /**
      * Agrega nueva unidad
      *
-     * @param unidadesRequestValidate $data array con los datos
+     * @param UnidadesRequestValidate $data array con los datos
      * @return JsonResponse
      */
-    public function new(unidadesRequestValidate $data) : JsonResponse
+    public function new(UnidadesRequestValidate $data) : JsonResponse
     {
         $unidad = Unidades::create($data->validated());
         return JsonResponseCustom::sendJson([
@@ -59,11 +59,11 @@ class UnidadesRepository implements UnidadesRepositoryInterface
     /**
      * Actualizacion de Registro
      *
-     * @param unidadesRequestValidate $data array con los datos
+     * @param UnidadesRequestValidate $data array con los datos
      * @param integer $id identificador de la unidad a actualizar
      * @return JsonResponse
      */
-    public function update(unidadesRequestValidate $data, int $id) : JsonResponse
+    public function update(UnidadesRequestValidate $data, int $id) : JsonResponse
     {
         $data->validated();
         $unidad = Unidades::findOrFail($id);

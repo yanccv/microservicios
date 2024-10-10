@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\unidadesRequestValidate;
-use Illuminate\Http\Request;
+use App\Http\Requests\UnidadesRequestValidate;
 use App\Interfaces\UnidadesRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
@@ -46,10 +45,10 @@ class unidadController extends Controller
     /**
      * Agregar Registro de Unidades
      *
-     * @param Request $request Valores a insertar
+     * @param UnidadesRequestValidate $request Valores a insertar
      * @return JsonResponse
      */
-    public function add(unidadesRequestValidate $request) : JsonResponse
+    public function add(UnidadesRequestValidate $request) : JsonResponse
     {
         return $this->unidadRepository->new($request);
     }
@@ -57,11 +56,11 @@ class unidadController extends Controller
     /**
      * Modificacion Completa - PUT
      *
-     * @param Request $request Todos los valores actualizables
+     * @param UnidadesRequestValidate $request Todos los valores actualizables
      * @param integer $id identificador del registro a editar
      * @return JsonResponse
      */
-    public function edit(unidadesRequestValidate $request, int $id) : JsonResponse
+    public function edit(UnidadesRequestValidate $request, int $id) : JsonResponse
     {
         return $this->unidadRepository->update($request, $id);
     }
@@ -69,11 +68,11 @@ class unidadController extends Controller
     /**
      * Modificacion Simple - PATCH
      *
-     * @param Request $request Valores a actualizar
+     * @param UnidadesRequestValidate $request Valores a actualizar
      * @param integer $id identificador del registro a editar
      * @return JsonResponse
      */
-    public function set(unidadesRequestValidate $request, int $id) : JsonResponse
+    public function set(UnidadesRequestValidate $request, int $id) : JsonResponse
     {
         return $this->unidadRepository->update($request, $id);
     }

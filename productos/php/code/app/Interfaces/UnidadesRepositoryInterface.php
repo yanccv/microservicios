@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-use App\Http\Requests\unidadesRequestValidate;
+use App\Http\Requests\UnidadesRequestValidate;
 use Illuminate\Http\JsonResponse;
 
 interface UnidadesRepositoryInterface
@@ -35,18 +35,18 @@ interface UnidadesRepositoryInterface
     /**
      * Agrega nueva unidad
      *
-     * @param unidadesRequestValidate $data array con los datos
+     * @param UnidadesRequestValidate $data array con los datos
      * @return JsonResponse
      */
-    public function new(unidadesRequestValidate $data);
+    public function new(UnidadesRequestValidate $data);
 
     /**
      * Actualizacion de Registro
      *
-     * @param unidadesRequestValidate $data array con los datos
+     * @param UnidadesRequestValidate $data array con los datos
      * @param integer $id identificador de la unidad a actualizar
      * @return JsonResponse
      */
-    public function update(unidadesRequestValidate $data, int $id);
+    public function update(UnidadesRequestValidate $data, int $id);
 
 }
