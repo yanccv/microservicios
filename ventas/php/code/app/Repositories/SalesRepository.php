@@ -64,36 +64,33 @@ class SalesRepository implements SalesInterface
 
 
     /**
-     * Agrega nueva unidad
+     * Agrega nueva venta
      *
      * @param UnidadesRequestValidate $data array con los datos
      * @return JsonResponse
      */
     public function new($data) : JsonResponse
     {
-        DB::beginTransaction();
-        try {
+
+        return DB::transaction(function () use ($data) {
             $dataFactura = new FacturaRequestValidate(['usuario_id' => $data['usuario_id']]);
-            $dataFactura = $this->factura->new($dataFactura);
+            $factura = $this->factura->new($dataFactura);
 
             $dataDetalleFactura = [];
-            foreach ($data['detalles'] as $key => $detalleProducto) {
+            foreach ($data['detalles'] as $detalleProducto) {
+                $productoDetalle['facturas_id'] = $factura->id;
                 $dataDetalleFactura[] = $this->detalleFactura->new(new DetalleFacturaRequestValidate($detalleProducto));
             }
-            DB::commit();
-            $dataResponse = $dataFactura;
+            $dataResponse = $factura;
             $dataResponse['detalleFactura'] = $dataDetalleFactura;
 
             return JsonResponseCustom::sendJson([
                 'status'    => true,
                 'mensaje'   => 'Registro agregado',
                 'data'      => $dataResponse,
-                'httpCode'  => JsonResponseCustom::$CODE_SUCCESS
+                'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
             ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-        }
-
+        });
     }
 
     /**

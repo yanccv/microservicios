@@ -52,7 +52,7 @@ class UnidadesRepository implements UnidadesRepositoryInterface
             'status'    => true,
             'mensaje'   => 'Registro agregado',
             'data'      => $unidad->toArray(),
-            'httpCode'  => 200
+            'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
         ]);
     }
 

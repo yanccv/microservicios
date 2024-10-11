@@ -57,8 +57,8 @@ class FacturaRepository implements FacturaInterface
      */
     public function new(FacturaRequestValidate $data)
     {
-        return Factura::create($data->validated());
-        // $this->factura->delete($data['factura_id']);
+        $factura = Factura::create($data->validated());
+        return $factura->toArray();
     }
 
     /**
