@@ -57,6 +57,9 @@ class FacturaRepository implements FacturaInterface
      */
     public function new(FacturaRequestValidate $data)
     {
+        $rules = (new \App\Http\Requests\FacturaRequestValidate())->rules();
+            $validator = Validator::make($data, $rules);
+            $validator->validate();
         // $factura = Factura::create($data->validated());
         // return $factura->toArray();
     }
