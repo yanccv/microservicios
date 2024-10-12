@@ -38,6 +38,7 @@ class SalesRepository implements SalesInterface
     public function find(int $id)
     {
         return $this->factura->find($id);
+
     }
 
     /**
@@ -69,28 +70,35 @@ class SalesRepository implements SalesInterface
      * @param UnidadesRequestValidate $data array con los datos
      * @return JsonResponse
      */
-    public function new($data) : JsonResponse
+
+
+    public function new(FacturaRequestValidate $data) // : JsonResponse
     {
+        return $data;
+        // return DB::transaction(function () use ($data) {
+        //     $dataFactura = new FacturaRequestValidate(['usuario_id' => $data['usuario_id']]);
+        //     $factura = $this->factura->new($dataFactura);
 
-        return DB::transaction(function () use ($data) {
-            $dataFactura = new FacturaRequestValidate(['usuario_id' => $data['usuario_id']]);
-            $factura = $this->factura->new($dataFactura);
+        //     $dataDetalleFactura = [];
+        //     foreach ($data['detalles'] as $detalleProducto) {
+        //         $productoDetalle['facturas_id'] = $factura->id;
+        //         $dataDetalleFactura[] = $this->detalleFactura->new(new DetalleFacturaRequestValidate($detalleProducto));
+        //     }
+        //     $dataResponse = $factura;
+        //     $dataResponse['detalleFactura'] = $dataDetalleFactura;
 
-            $dataDetalleFactura = [];
-            foreach ($data['detalles'] as $detalleProducto) {
-                $productoDetalle['facturas_id'] = $factura->id;
-                $dataDetalleFactura[] = $this->detalleFactura->new(new DetalleFacturaRequestValidate($detalleProducto));
-            }
-            $dataResponse = $factura;
-            $dataResponse['detalleFactura'] = $dataDetalleFactura;
+        //     return JsonResponseCustom::sendJson([
+        //         'status'    => true,
+        //         'mensaje'   => 'Registro agregado',
+        //         'data'      => $dataResponse,
+        //         'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
+        //     ]);
+        // });
+    }
 
-            return JsonResponseCustom::sendJson([
-                'status'    => true,
-                'mensaje'   => 'Registro agregado',
-                'data'      => $dataResponse,
-                'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
-            ]);
-        });
+    public function new2(FacturaRequestValidate $data, DetalleFacturaRequestValidate $data2) // : JsonResponse
+    {
+        return $data;
     }
 
     /**

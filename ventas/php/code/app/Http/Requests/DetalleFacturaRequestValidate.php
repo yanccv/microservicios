@@ -13,7 +13,7 @@ class DetalleFacturaRequestValidate extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,8 +25,8 @@ class DetalleFacturaRequestValidate extends FormRequest
     {
         return [
             'productos_id'  => 'required',
-            'producto'      => 'required',
-            'precio'        => 'required|numeric',
+            // 'producto'      => 'required',
+            // 'precio'        => 'required|numeric',
             'cantidad'      => 'required|numeric',
         ];
     }

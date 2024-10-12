@@ -13,7 +13,7 @@ class FacturaRequestValidate extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +23,17 @@ class FacturaRequestValidate extends FormRequest
      */
     public function rules()
     {
+        return [];
         return [
             'usuarios_id' => 'required'
         ];
+
+        // return [
+        //     'usuarios_id' => 'required|integer',
+        //     'productos.*.productos_id' => 'required|integer',
+        //     'productos.*.cantidad' => 'required|integer',
+        //     // Nueva regla para validar que el array 'productos' no esté vacío
+        //     'productos' => 'required|array|min:1',
+        // ];
     }
 }

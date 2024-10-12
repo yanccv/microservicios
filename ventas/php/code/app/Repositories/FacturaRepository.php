@@ -23,7 +23,7 @@ class FacturaRepository implements FacturaInterface
      */
     public function find(int $id)
     {
-        return $this->factura->find($id);
+        return Factura::with('detalles')->find($id);
     }
 
     /**
@@ -45,7 +45,7 @@ class FacturaRepository implements FacturaInterface
      */
     public function all()
     {
-
+        return Factura::with('detalles')->get();
     }
 
 
@@ -57,8 +57,8 @@ class FacturaRepository implements FacturaInterface
      */
     public function new(FacturaRequestValidate $data)
     {
-        $factura = Factura::create($data->validated());
-        return $factura->toArray();
+        // $factura = Factura::create($data->validated());
+        // return $factura->toArray();
     }
 
     /**
