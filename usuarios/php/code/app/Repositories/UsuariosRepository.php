@@ -62,7 +62,7 @@ class UsuariosRepository implements UsuariosInterface
     {
         // dd($data->validated());
         $usuario = Usuario::create($data->validated());
-        $this->sendMessageQueue->sendMessage($usuario->toArray(), 'usersAdded', 'users.added');
+        $this->sendMessageQueue->sendMessage($usuario->toArray(), 'userAdded', 'user.added');
         return $this->jsonResponse::sendJson([
             'status'    => true,
             'mensaje'   => 'Registro agregado',
@@ -92,7 +92,7 @@ class UsuariosRepository implements UsuariosInterface
             ]);
         }
         $usuario->save();
-        $this->sendMessageQueue->sendMessage($usuario->toArray(), 'usersUpdated', 'users.updated');
+        $this->sendMessageQueue->sendMessage($usuario->toArray(), 'userUpdated', 'user.updated');
         return $this->jsonResponse::sendJson([
             'status' => true,
             'mensaje' => 'Registro actualizado',
@@ -111,7 +111,7 @@ class UsuariosRepository implements UsuariosInterface
     {
         $usuarios = Usuario::findOrFail($id);
         $usuarios->delete();
-        $this->sendMessageQueue->sendMessage($id, 'usersDeleted', 'users.deleted');
+        $this->sendMessageQueue->sendMessage($id, 'userDeleted', 'user.deleted');
         return $this->jsonResponse::sendJson([
             'status' => true,
             'mensaje' => 'Registro eliminado',
