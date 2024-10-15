@@ -96,7 +96,9 @@ class Handler extends ExceptionHandler
 
         return JsonResponseCustom::sendJson([
             'status' => false,
-            'mensaje' => 'XError:['.']'.$exception->getMessage(). ', File:'.$exception->getFile() . ', Line: '.$exception->getLine(),
+            'mensaje' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
             'httpCode' => JsonResponseCustom::$CODE_EXCEPTION
         ]);
     }

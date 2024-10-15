@@ -23,8 +23,8 @@ class SendMessagesQueue implements SendMessagesInterface
      *
      * @return void
      */
-    public function sendMessage(array | int | string $message, string $job, string $routingKey): void
+    public function sendMessage(array | int | string $message, string $queueName, string $job, string $routingKey): void
     {
-        Queue::pushOn('salesQueue', $job, $message, $routingKey);
+        Queue::pushOn($queueName, $job, $message, $routingKey);
     }
 }

@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\usuarioController;
  * Rutas de las facturas
  */
 Route::get('/facturas/{id}', [facturaController::class, 'getFactura']);
+// Route::post('/facturas', [facturaController::class, 'test']);
 Route::post('/facturas', [facturaController::class, 'add']);
 // Route::patch('/facturas/{id}', [facturaController::class, 'edit']);
 Route::delete('/facturas/{id}', [facturaController::class, 'destroy']);

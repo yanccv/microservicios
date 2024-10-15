@@ -37,10 +37,10 @@ interface FacturaInterface
     /**
      * Agrega nueva Factura
      *
-     * @param UnidadesRequestValidate $data array con los datos
+     * @param FacturaRequestValidate $data array con los datos
      * @return JsonResponse
      */
-    public function new(FacturaRequestValidate $data);
+    public function new(FacturaRequestValidate $factura);
 
     /**
      * Actualizacion de Registro

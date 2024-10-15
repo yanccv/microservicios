@@ -65,7 +65,7 @@ class usuariosQueueConsume extends Command
             // userAdded->handle($data);
             echo PHP_EOL.'job:'.$data->job;
             echo PHP_EOL.'ini:'.strrpos('\\', $data->job);
-            echo PHP_EOL.'word:'.$data->job, strrpos('\\', $data->job);
+            echo PHP_EOL.'word:'.$data->job.strrpos('\\', $data->job);
 
             print_r(substr($data->job, strrpos('/', $data->job)));
             switch (substr($data->job, strrpos('/', $data->job))) {

@@ -22,7 +22,7 @@ interface DetalleFacturaInterface
      * @param DetalleFacturaRequestValidate $data array con los datos
      * @return boolean
      */
-    public function new(DetalleFacturaRequestValidate $data);
+    public function new(DetalleFacturaRequestValidate $detalleFactura, int $idFactura);
 
     /**
      * Actualizacion de Registro

@@ -11,22 +11,26 @@ use App\Http\Requests\FacturaRequestValidate;
 use App\Interfaces\DetalleFacturaInterface;
 use App\Interfaces\FacturaInterface;
 use App\Interfaces\SalesInterface;
+use App\Interfaces\SendMessagesInterface;
 use App\Utilities\JsonResponseCustom;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+// use Illuminate\Http\Request;
 
 class SalesRepository implements SalesInterface
 {
 
-    private $factura, $detalleFactura;
+    private $factura, $detalleFactura, $sendMessageQueue;
 
     public function __construct(
         FacturaInterface $factura,
-        DetalleFacturaInterface $detalleFactura
+        DetalleFacturaInterface $detalleFactura,
+        SendMessagesInterface $sendMessageQueue
     )
     {
         $this->factura = $factura;
         $this->detalleFactura = $detalleFactura;
+        $this->sendMessageQueue = $sendMessageQueue;
     }
 
     /**
@@ -64,41 +68,30 @@ class SalesRepository implements SalesInterface
     }
 
 
+
+
     /**
-     * Agrega nueva venta
+     * Procesa la venta
+     * @param FacturaRequestValidate $factura
+     * @param DetalleFacturaRequestValidate $detalleFactura
      *
-     * @param UnidadesRequestValidate $data array con los datos
-     * @return JsonResponse
+     * @return [type]
      */
-
-
-    public function new(FacturaRequestValidate $data) // : JsonResponse
+    public function new(FacturaRequestValidate $saleFactura, DetalleFacturaRequestValidate $saleDetalleFactura) // : JsonResponse
     {
-        return $data;
-        // return DB::transaction(function () use ($data) {
-        //     $dataFactura = new FacturaRequestValidate(['usuario_id' => $data['usuario_id']]);
-        //     $factura = $this->factura->new($dataFactura);
+        return DB::transaction(function () use ($saleFactura, $saleDetalleFactura) {
+            $newFactura = $this->factura->new($saleFactura);
+            $this->detalleFactura->new($saleDetalleFactura, $newFactura->id);
 
-        //     $dataDetalleFactura = [];
-        //     foreach ($data['detalles'] as $detalleProducto) {
-        //         $productoDetalle['facturas_id'] = $factura->id;
-        //         $dataDetalleFactura[] = $this->detalleFactura->new(new DetalleFacturaRequestValidate($detalleProducto));
-        //     }
-        //     $dataResponse = $factura;
-        //     $dataResponse['detalleFactura'] = $dataDetalleFactura;
-
-        //     return JsonResponseCustom::sendJson([
-        //         'status'    => true,
-        //         'mensaje'   => 'Registro agregado',
-        //         'data'      => $dataResponse,
-        //         'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
-        //     ]);
-        // });
-    }
-
-    public function new2(FacturaRequestValidate $data, DetalleFacturaRequestValidate $data2) // : JsonResponse
-    {
-        return $data;
+            $this->sendMessageQueue->sendMessage($saleFactura->DetalleFactura, 'productsBySale', 'saleAdded', 'sale.Added');
+            $this->sendMessageQueue->sendMessage($newFactura->only('id','usuarios_id','created_at'), 'userBySale', 'saleAdded', 'sale.Added');
+            return JsonResponseCustom::sendJson([
+                'status'    => true,
+                'mensaje'   => 'Registro agregado',
+                'data'      => $saleDetalleFactura->all(),
+                'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
+            ]);
+        });
     }
 
     /**

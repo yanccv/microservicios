@@ -10,5 +10,5 @@ interface SendMessagesInterface
      * @param array $message
      * @return void
      */
-    public function sendMessage(array | int | string $message, string $job, string $routingKey): void;
+    public function sendMessage(array | int | string $message, string $queueName, string $job, string $routingKey): void;
 }

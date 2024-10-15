@@ -7,6 +7,7 @@ namespace App\Interfaces;
 use App\Http\Requests\DetalleFacturaRequestValidate;
 use App\Http\Requests\FacturaRequestValidate;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 interface SalesInterface
 {
@@ -35,14 +36,16 @@ interface SalesInterface
     public function all();
 
 
+
     /**
-     * Agrega nueva unidad
+     * Agrega Venta
+     * @param FacturaRequestValidate $factura
+     * @param DetalleFacturaRequestValidate $detalleFactura
      *
-     * @param UnidadesRequestValidate $data array con los datos
-     * @return JsonResponse
+     * @return [type]
      */
-    public function new(FacturaRequestValidate $data);
-    public function new2(FacturaRequestValidate $data, DetalleFacturaRequestValidate $data2);
+    public function new(FacturaRequestValidate $factura, DetalleFacturaRequestValidate $detalleFactura);
+    // public function new2(FacturaRequestValidate $data, DetalleFacturaRequestValidate $data2);
 
     /**
      * Actualizacion de Registro

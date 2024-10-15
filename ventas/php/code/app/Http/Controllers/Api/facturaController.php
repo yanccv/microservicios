@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DetalleFacturaRequestValidate;
 use App\Http\Requests\FacturaRequestValidate;
 use App\Interfaces\SalesInterface;
-// use Illuminate\Container\Attributes\Database;
 use Illuminate\Http\Request;
+
+// use Illuminate\Container\Attributes\Database;
 
 class facturaController extends Controller
 {
@@ -48,6 +49,13 @@ class facturaController extends Controller
         // }
     }
 
+    public function test(FacturaRequestValidate $request1, DetalleFacturaRequestValidate $request2) //: \Illuminate\Http\JsonResponse
+    {
+        return $request1->validated()['Factura'];
+        print_r($request1);
+        print_r($request2);
+    }
+
 
     /**
      * Agregar Registro de Factura y Detalle Factura - POST
@@ -55,8 +63,9 @@ class facturaController extends Controller
      * @param Request $request Valores a insertar
      * @return \Illuminate\Http\JsonResponse
      */
-    public function add(Request $request) //: \Illuminate\Http\JsonResponse
+    public function add(FacturaRequestValidate $factura, DetalleFacturaRequestValidate $detalleFactura) //: \Illuminate\Http\JsonResponse
     {
+        return $this->saleRepository->new($factura, $detalleFactura);
         $facturaValidate = new FacturaRequestValidate();
         $facturaValidate->replace(['usuarios_id' => $request->usuarios_id]);
         // $facturaValidate->validated();

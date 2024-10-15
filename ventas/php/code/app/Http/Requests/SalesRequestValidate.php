@@ -24,8 +24,8 @@ class SalesRequestValidate extends FormRequest
     public function rules()
     {
         return [
-            'usuarios_id' => 'required',
-            'detalleProductos' => 'required|array|min:1'
+            'Factura.usuarios_id' => 'required',
+            'DetalleFactura' => 'required|array|min:1'
         ];
     }
 }

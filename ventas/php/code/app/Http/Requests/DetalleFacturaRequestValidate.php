@@ -24,10 +24,21 @@ class DetalleFacturaRequestValidate extends FormRequest
     public function rules()
     {
         return [
-            'productos_id'  => 'required',
-            // 'producto'      => 'required',
-            // 'precio'        => 'required|numeric',
-            'cantidad'      => 'required|numeric',
+            'DetalleFactura'  => 'required|array|min:1',
+            'DetalleFactura.*.productos_id' => 'required|integer',
+            'DetalleFactura.*.cantidad' => 'required|integer||min:1',
+        ];
+    }
+
+
+    public function messages()
+    {
+        return [
+            'DetalleFactura' => 'La factura debe incluir algun producto.',
+            'DetalleFactura.*.productos_id.required' => 'El necesario agregar un producto.',
+            'DetalleFactura.*.productos_id.integer' => 'el id del producto debe ser un valor entero.',
+            'DetalleFactura.*.cantidad.required' => 'El necesario agregar la cantidad producto.',
+            'DetalleFactura.*.cantidad.integer' => 'la cantidad del debe ser un valor entero.',
         ];
     }
 }

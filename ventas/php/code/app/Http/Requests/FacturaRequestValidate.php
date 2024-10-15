@@ -23,9 +23,8 @@ class FacturaRequestValidate extends FormRequest
      */
     public function rules()
     {
-        return [];
         return [
-            'usuarios_id' => 'required'
+            'Factura.usuarios_id' => 'required'
         ];
 
         // return [

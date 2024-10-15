@@ -10,8 +10,10 @@ use App\Http\Requests\FacturaRequestValidate;
 use App\Interfaces\DetalleFacturaInterface;
 use App\Interfaces\FacturaInterface;
 use App\Models\Factura;
+use App\Models\Usuario;
 use App\Utilities\JsonResponseCustom;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 
 class FacturaRepository implements FacturaInterface
 {
@@ -50,18 +52,16 @@ class FacturaRepository implements FacturaInterface
 
 
     /**
-     * Agrega nueva unidad
+     * Agrega nueva factura
      *
-     * @param UnidadesRequestValidate $data array con los datos
+     * @param FacturaRequestValidate $data array con los datos
      * @return JsonResponse
      */
-    public function new(FacturaRequestValidate $data)
+    public function new(FacturaRequestValidate $facturaForm)
     {
-        $rules = (new \App\Http\Requests\FacturaRequestValidate())->rules();
-            $validator = Validator::make($data, $rules);
-            $validator->validate();
-        // $factura = Factura::create($data->validated());
-        // return $factura->toArray();
+        $facturaForm->validated();
+        Usuario::findOrFail($facturaForm->Factura['usuarios_id']);
+        return  Factura::create($facturaForm->Factura);
     }
 
     /**
