@@ -68,14 +68,12 @@ class SalesRepository implements SalesInterface
     }
 
 
-
-
     /**
      * Procesa la venta
      * @param FacturaRequestValidate $factura
      * @param DetalleFacturaRequestValidate $detalleFactura
      *
-     * @return [type]
+     * @return JsonResponse
      */
     public function new(FacturaRequestValidate $saleFactura, DetalleFacturaRequestValidate $saleDetalleFactura) // : JsonResponse
     {
