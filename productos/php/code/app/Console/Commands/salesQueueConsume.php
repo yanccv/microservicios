@@ -46,7 +46,7 @@ class salesQueueConsume extends Command
     {
 
         echo 'handler salesQueueCommand';
-        $queue = 'facturasQueue'; // Nombre de la cola que estás usando
+        $queue = 'productsBySale'; // Nombre de la cola que estás usando
         // $exchange_name ="productosExchange";
         // $this->channel->exchange_declare($exchange_name, 'direct', true, false, false);
         $this->channel->queue_declare($queue, false, true, false, false, false, []);
@@ -56,7 +56,7 @@ class salesQueueConsume extends Command
             $data = (object) json_decode($msg->body, true);
             print_r($data->data);
             switch (substr($data->job, strrpos('/', $data->job))) {
-                case 'facturaAdded':
+                case 'saleAdded':
                     $saleAdded = new salesAdded($data->data);
                     $saleAdded->handle();
                 break;

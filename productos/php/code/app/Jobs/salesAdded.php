@@ -35,7 +35,7 @@ class salesAdded implements ShouldQueue
         echo PHP_EOL.'Update existencia in Product with Sale Event';
         try {
             DB::beginTransaction();
-            foreach ($this->data['products'] as $key => $productItem) {
+            foreach ($this->data as $productItem) {
                 $producto = Producto::findOrFail($productItem['productos_id']);
                 $producto->existencia -= $productItem['cantidad'];
                 $producto->save();
