@@ -60,12 +60,13 @@ class ProductosRepository implements ProductosInterface
      */
     public function new(ProductosRequestValidate $data) : JsonResponse
     {
-        // dd($data->validated());
-        $producto = Producto::create($data->validated());
+        // return $this->jsonResponse::sendJson(['data' => $data->all(), 'httpCode' => 200]);
+        $data->validated();
+        $producto = Producto::create($data->all());
         $this->sendMessageQueue->sendMessage($producto->toArray(), 'productAdded', 'product.added');
         return $this->jsonResponse::sendJson([
             'status'    => true,
-            'mensaje'   => 'Registro agregado',
+            'mensaje'   => 'Producto agregado',
             'data'      => $producto->toArray(),
             'httpCode'  => $this->jsonResponse::$CODE_SUCCESS
         ]);
