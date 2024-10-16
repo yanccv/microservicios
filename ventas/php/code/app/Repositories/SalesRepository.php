@@ -80,12 +80,11 @@ class SalesRepository implements SalesInterface
         return DB::transaction(function () use ($saleFactura, $saleDetalleFactura) {
             $newFactura = $this->factura->new($saleFactura);
             $this->detalleFactura->new($saleDetalleFactura, $newFactura->id);
-
             $this->sendMessageQueue->sendMessage($saleFactura->DetalleFactura, 'productsBySale', 'saleAdded', 'sale.Added');
             $this->sendMessageQueue->sendMessage($newFactura->only('id','usuarios_id','created_at'), 'userBySale', 'saleAdded', 'sale.Added');
             return JsonResponseCustom::sendJson([
                 'status'    => true,
-                'mensaje'   => 'Registro agregado',
+                'mensaje'   => 'Venta realizada con exito',
                 'data'      => $saleDetalleFactura->all(),
                 'httpCode'  => JsonResponseCustom::$CODE_CREATED_SUCCESS
             ]);

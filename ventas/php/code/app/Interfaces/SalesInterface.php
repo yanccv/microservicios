@@ -38,7 +38,7 @@ interface SalesInterface
 
 
     /**
-     * Agrega Venta
+     * Procesa la venta
      * @param FacturaRequestValidate $factura
      * @param DetalleFacturaRequestValidate $detalleFactura
      *

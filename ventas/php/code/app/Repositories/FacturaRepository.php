@@ -61,7 +61,7 @@ class FacturaRepository implements FacturaInterface
     {
         $facturaForm->validated();
         Usuario::findOrFail($facturaForm->Factura['usuarios_id']);
-        return  Factura::create($facturaForm->Factura);
+        return Factura::create($facturaForm->Factura);
     }
 
     /**
