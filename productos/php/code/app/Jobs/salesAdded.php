@@ -32,31 +32,14 @@ class salesAdded implements ShouldQueue
      */
     public function handle()
     {
-        echo PHP_EOL.'Update existencia in Product with Sale Event';
-        try {
-            DB::beginTransaction();
-            foreach ($this->data as $productItem) {
+        // realiza el descuento de la existencia segun la cantidad que venga de las facturas
+        $data = $this->data;
+        DB::transaction(function () use ($data) {
+            foreach ($data as $productItem) {
                 $producto = Producto::findOrFail($productItem['productos_id']);
                 $producto->existencia -= $productItem['cantidad'];
                 $producto->save();
             }
-            DB::commit();
-            echo PHP_EOL.'Update in Products FacturaID: ['.$this->data['facturas_id'].']';
-        } catch (\illuminate\Database\QueryException $e){
-            DB::rollBack();
-            echo PHP_EOL.'Fail Update Products With FacturaId: ['.$this->data['facturas_id'].']';
-            print_r($e->getMessage());
-            return false;
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            DB::rollBack();
-            echo PHP_EOL.'Fail Update Products With FacturaId: ['.$this->data['facturas_id'].']';
-            print_r($th->getMessage());
-            return false;
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            print_r($th->getMessage());
-            echo PHP_EOL.'Fail Update Products With FacturaId: ['.$this->data['facturas_id'].']';
-            return false;
-        }
+        });
     }
 }
