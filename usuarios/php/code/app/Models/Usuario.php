@@ -54,4 +54,13 @@ class Usuario extends Model
         ];
     }
 
+    public function facturas()
+    {
+        return $this->belongsTo(
+            Facturas::class,
+            'id',
+            'usuarios_id'
+        );
+    }
+
 }
